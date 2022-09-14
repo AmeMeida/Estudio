@@ -14,7 +14,24 @@ namespace Estudio
     {
         public FrmEstudio()
         {
+            try {
+                DAO_Connection.GetConnection();
+                Console.WriteLine("Conexão estabelecida com sucesso");
+            } catch (Exception) {
+                Console.WriteLine("Houve um erro na conexão.");
+            }
+
             InitializeComponent();
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            var user  = txtLogin.Text.Trim();
+            var senha = txtSenha.Text.Trim();
+
+            var tipo = DAO_Connection.Login(user, senha);
+
+            MessageBox.Show(tipo.Text, "Usuário.");
         }
     }
 }
