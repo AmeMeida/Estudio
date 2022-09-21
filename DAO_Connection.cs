@@ -8,17 +8,11 @@ using System.Windows.Forms;
 
 namespace Estudio
 {
-    public class Tipo
+    public enum UserType
     {
-        public readonly string Text;
-
-        private Tipo(string text) { Text = text; }
-
-        public static readonly Tipo notFound = new Tipo("Não encontrado.");
-        public static readonly Tipo user = new Tipo("user");
-        public static readonly Tipo admin = new Tipo("admin");
-
-        public static readonly Tipo[] Values = { user, admin };
+        NotFound = 0,
+        User     = 1,
+        Admin    = 2,
     }
 
     public static class DAO_Connection
@@ -34,9 +28,9 @@ namespace Estudio
                     .Append("server=").Append(host)
                     .Append(";User ID=").Append(user)
                     .Append(";database=").Append(database)
-                    .Append(";password=").Append(password);
+                    .Append(";password=").Append(password).ToString();
 
-                con = new MySqlConnection(connectionString.ToString());
+                con = new MySqlConnection(connectionString);
                 ConnectionStatus = true;
             }
             catch (Exception ex)
@@ -61,37 +55,29 @@ namespace Estudio
             command.CommandText = sql;
         }
 
-        public static Tipo Login(string usuario, string senha)
+        public static UserType Login(string usuario, string senha)
         {
-            Tipo tipo = Tipo.notFound;
+            UserType utype = 0;
 
-            try
-            {
+            try {
                 con.Open();
                 var loginCommand = new StringBuilder()
                     .Append("SELECT * FROM Estudio_Login where usuario = ").Append("'" + usuario + "'")
-                    .Append("and")
-                    .Append("senha = ").Append("'" + senha + "';");
+                    .Append(" and ")
+                    .Append("senha = ").Append("'" + senha + "';")
+                    .ToString();
 
-                var login = new MySqlCommand(loginCommand.ToString(), con);
-                var query = login.ExecuteReader();
+                var query = new MySqlCommand(loginCommand, con).ExecuteReader();
 
                 if (query.Read())
-                {
-                    MessageBox.Show(query["tipo"].ToString());
-                    tipo = Tipo.Values.ToList().Find(t => t.Text.ToLower() == query["tipo"].ToString()) ?? Tipo.notFound;
-                }
-            }
-            catch (Exception ex)
-            {
+                    utype = (UserType)int.Parse(query["tipo"].ToString() ?? "0"); 
+            } catch (Exception ex) {
                 Console.WriteLine(ex.ToString());
-            }
-            finally
-            {
+            } finally {
                 con.Close();
             }
 
-            return tipo;
+            return utype;
         } 
     }
 }
