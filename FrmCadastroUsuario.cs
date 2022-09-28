@@ -15,16 +15,20 @@ namespace Estudio
         public FrmCadastroUsuario()
         {
             InitializeComponent();
-
-            cboUserType.DataSource = Enum.GetValues(typeof(UserType)).Cast<UserType>()
-                .Select(x => new { Key = Enum.GetName(typeof(UserType), x), Value = x });
+            // cboUserType.DataSource = Enum.GetValues(typeof(UserType)).Cast<UserType>().Where(x => x != UserType.NotFound)
+            //     .Select(x => new { Key = Enum.GetName(typeof(UserType), x), Value = x }).ToList();
             cboUserType.DisplayMember = "Key";
-            cboUserType.ValueMember = "Value";
+            cboUserType.ValueMember   = "Value";
+
+            cboUserType.DataSource =
+                (from UserType uType in Enum.GetValues(typeof(UserType))
+                 where uType != UserType.NotFound
+                 select new { Key = Enum.GetName(typeof(UserType), uType), Value = uType }).ToList();
         }
 
-        private void btnCadastrarUsuario_Click(object sender, EventArgs e)
-        {
-            // TODO retornar um usuário ao clicar no botão.
-        }
+        private void btnCadastrarUsuario_Click(object sender, EventArgs e) =>
+            MessageBox.Show(DAO_Connection.CadLogin(txtUsuario.Text, txtSenha.Text, (UserType)cboUserType.SelectedValue) 
+                ? "Usuário cadastrado com sucesso!" 
+                : "Erro ao cadastrar.");
     }
 }

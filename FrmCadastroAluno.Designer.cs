@@ -30,6 +30,7 @@ namespace Estudio
         private void InitializeComponent()
         {
             this.gbCadastroAluno = new System.Windows.Forms.GroupBox();
+            this.btnPic = new System.Windows.Forms.Button();
             this.picAluno = new System.Windows.Forms.PictureBox();
             this.btnCadastrar = new System.Windows.Forms.Button();
             this.txtEmail = new System.Windows.Forms.TextBox();
@@ -54,7 +55,6 @@ namespace Estudio
             this.txtEndereco = new System.Windows.Forms.TextBox();
             this.txtNome = new System.Windows.Forms.TextBox();
             this.lblCPF = new System.Windows.Forms.Label();
-            this.btnPic = new System.Windows.Forms.Button();
             this.gbCadastroAluno.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picAluno)).BeginInit();
             this.SuspendLayout();
@@ -95,6 +95,15 @@ namespace Estudio
             this.gbCadastroAluno.TabStop = false;
             this.gbCadastroAluno.Text = "Dados Cadastrais";
             // 
+            // btnPic
+            // 
+            this.btnPic.Location = new System.Drawing.Point(575, 212);
+            this.btnPic.Name = "btnPic";
+            this.btnPic.Size = new System.Drawing.Size(194, 23);
+            this.btnPic.TabIndex = 24;
+            this.btnPic.Text = "Escolher foto";
+            this.btnPic.UseVisualStyleBackColor = true;
+            // 
             // picAluno
             // 
             this.picAluno.Location = new System.Drawing.Point(575, 19);
@@ -111,6 +120,7 @@ namespace Estudio
             this.btnCadastrar.TabIndex = 23;
             this.btnCadastrar.Text = "Cadastrar";
             this.btnCadastrar.UseVisualStyleBackColor = true;
+            this.btnCadastrar.Click += new System.EventHandler(this.btnCadastrar_Click);
             // 
             // txtEmail
             // 
@@ -290,15 +300,6 @@ namespace Estudio
             this.lblCPF.Size = new System.Drawing.Size(27, 13);
             this.lblCPF.TabIndex = 0;
             this.lblCPF.Text = "CPF";
-            // 
-            // btnPic
-            // 
-            this.btnPic.Location = new System.Drawing.Point(575, 212);
-            this.btnPic.Name = "btnPic";
-            this.btnPic.Size = new System.Drawing.Size(194, 23);
-            this.btnPic.TabIndex = 24;
-            this.btnPic.Text = "Escolher foto";
-            this.btnPic.UseVisualStyleBackColor = true;
             // 
             // FrmCadastroAluno
             // 

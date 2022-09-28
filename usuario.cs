@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace Estudio
 {
+    public static class StringExtensions
+    {
+        public static string Check(this string str) => !string.IsNullOrEmpty(str) ? str.Trim() : throw new ArgumentNullException(nameof(str) + " não deve estar vazio.");
+    }
+
     class Usuario
     {
+        // public static 
         public string User { get; }
         public string Senha { get; }
         public UserType AccountType { get; }
@@ -16,8 +22,8 @@ namespace Estudio
         {
             AccountType = DAO_Connection.Login(user, senha);
 
-            User = user ?? throw new ArgumentNullException(nameof(user));
-            Senha = senha ?? throw new ArgumentNullException(nameof(senha));
+            User =  user.Check();
+            Senha = senha.Check();
         }
 
         public override string ToString()

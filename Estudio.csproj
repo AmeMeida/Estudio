@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aluno.cs" />
     <Compile Include="DAO_Connection.cs" />
     <Compile Include="FrmCadastroAluno.cs">
       <SubType>Form</SubType>
