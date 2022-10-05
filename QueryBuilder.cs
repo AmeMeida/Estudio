@@ -86,16 +86,11 @@ namespace Estudio
             return this;
         }
 
-        public QueryBuilder WHERE(string condition)
-        {
-            WHERE();
-            query.Append(condition.Check() + " ");
-            return this;
-        }
-
-        public QueryBuilder WHERE()
+        public QueryBuilder WHERE(string condition = null)
         {
             query.Append("WHERE ");
+            if (condition != null)
+                query.Append(condition + " ");
             return this;
         }
 
@@ -111,9 +106,6 @@ namespace Estudio
             return this;
         }
 
-        public override string ToString()
-        {
-            return query.ToString().Trim() + ";";
-        }
+        public override string ToString() => query.ToString().Trim() + ";";
     }
 }
