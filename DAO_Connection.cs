@@ -34,7 +34,8 @@ namespace Estudio
                     .Append("server=").Append(host)
                     .Append(";User ID=").Append(user)
                     .Append(";database=").Append(database)
-                    .Append(";password=").Append(password).ToString();
+                    .Append(";password=").Append(password)
+                    .ToString();
 
                 con = new MySqlConnection(connectionString);
                 ConnectionStatus = true;
@@ -69,11 +70,21 @@ namespace Estudio
 
             try {
                 con.Open();
+
+                var loginCommand = new QueryBuilder()
+                    .SELECT()
+                    .FROM("Estudio_Login")
+                    .WHERE("usuario = " + usuario.Quote())
+                    .AND("senha = " + senha.Quote())
+                    .ToString();
+
+                /*
                 var loginCommand = new StringBuilder()
                     .Append("SELECT * FROM Estudio_Login where usuario = ").Append("'" + usuario.Check() + "'")
                     .Append(" and ")
                     .Append("senha = ").Append("'" + senha.Check() + "';")
                     .ToString();
+                */
 
                 var query = new MySqlCommand(loginCommand, con).ExecuteReader();
 
@@ -96,6 +107,14 @@ namespace Estudio
             {
                 con.Open();
 
+                var insert = new QueryBuilder()
+                    .INSERT()
+                    .INTO("Estudio_Login")
+                    .COLUMNS("usuario", "senha", "tipo")
+                    .VALUES(user, password, ((int)uType).ToString())
+                    .ToString();
+
+                /*
                 var insert = new StringBuilder()
                     .Append("INSERT INTO Estudio_Login(usuario, senha, tipo) VALUES(")
                     .AppendQuote(user.Check())
@@ -105,6 +124,7 @@ namespace Estudio
                     .AppendQuote(((int)uType).ToString())
                     .Append(")")
                     .ToString();
+                 */
 
                 var query = new MySqlCommand(insert, con);
                 query.ExecuteNonQuery();
@@ -132,6 +152,14 @@ namespace Estudio
             {
                 con.Open();
 
+                var command = new QueryBuilder()
+                    .INSERT()
+                    .INTO("Estudio_Aluno")
+                    .COLUMNS("CPFAluno", "nomeAluno", "ruaAluno", "numeroAluno", "bairroAluno", "complementoAluno", "CEPAluno", "cidadeAluno", "estadoAluno", "telefoneAluno", "emailAluno")
+                    .VALUES(cpf, nome, rua, numero, bairro, complemento, cep, cidade, estado, telefone, email)
+                    .ToString();
+
+                /*
                 var command = new StringBuilder("INSERT INTO Estudio_Aluno(CPFAluno, nomeAluno, ruaAluno, numeroAluno, bairroAluno, complementoAluno, CEPAluno, cidadeAluno, estadoAluno, telefoneAluno, emailAluno) VALUES(")
                     .AppendComma(cpf)
                     .AppendComma(nome)
@@ -146,6 +174,7 @@ namespace Estudio
                     .AppendQuote(email)
                     .Append(");")
                     .ToString();
+                 */
 
                 var insert = new MySqlCommand(command, con);
                 insert.ExecuteNonQuery();

@@ -71,6 +71,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryBuilder.cs" />
     <Compile Include="usuario.cs" />
     <EmbeddedResource Include="FrmCadastroAluno.resx">
       <DependentUpon>FrmCadastroAluno.cs</DependentUpon>

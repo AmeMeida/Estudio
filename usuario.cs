@@ -9,6 +9,8 @@ namespace Estudio
     public static class StringExtensions
     {
         public static string Check(this string str) => !string.IsNullOrEmpty(str) ? str.Trim() : throw new ArgumentNullException(nameof(str) + " não deve estar vazio.");
+
+        public static string Quote(this string str) => "'" + str.Check() + "'";
     }
 
     class Usuario
