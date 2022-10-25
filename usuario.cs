@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace Estudio
 {
+    public enum UserType
+    {
+        NotFound = 0,
+        User = 1,
+        Admin = 2,
+    }
+
     public static class StringExtensions
     {
         public static string Check(this string str) => !string.IsNullOrEmpty(str) ? str.Trim() : throw new ArgumentNullException(nameof(str) + " não deve estar vazio.");
@@ -13,19 +20,33 @@ namespace Estudio
         public static string Quote(this string str) => "'" + str.Check() + "'";
     }
 
-    class Usuario
+    public class Usuario
     {
+        private string user;
+        private string senha;
+
         // public static 
-        public string User { get; }
-        public string Senha { get; }
-        public UserType AccountType { get; }
+        public string User
+        {
+            get => user;
+            set => user = value.Check();
+        }
+        public string Senha 
+        {
+            get => senha; 
+            set => senha = value.Check();
+        }
+        public UserType AccountType { get; set; }
 
         public Usuario(string user, string senha)
         {
-            AccountType = DAO_Connection.Login(user, senha);
+            User = user;
+            Senha = senha;
+        }
 
-            User =  user.Check();
-            Senha = senha.Check();
+        public Usuario(string user, string senha, UserType accountType) : this(user, senha)
+        {
+            AccountType = accountType;
         }
 
         public override string ToString()

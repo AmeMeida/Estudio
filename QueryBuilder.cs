@@ -1,7 +1,14 @@
-﻿using System.Text;
+﻿using MySql.Data.MySqlClient;
+using System.Text;
 
 namespace Estudio
 {
+    public static class StringBuilderExtensions
+    {
+        public static StringBuilder AppendQuote(this StringBuilder builder, string value) => builder.Append(" '").Append(value).Append("' ");
+        public static StringBuilder AppendComma(this StringBuilder builder, string value) => builder.Append(" '").Append(value).Append("', ");
+    }
+
     public class QueryBuilder
     {
         private StringBuilder query;
@@ -62,6 +69,18 @@ namespace Estudio
             return this;
         }
 
+        public QueryBuilder UPDATE(string table)
+        {
+            query = new StringBuilder("UPDATE " + table + " ");
+            return this;
+        }
+
+        public QueryBuilder SET(string column, string value)
+        {
+            query.Append("SET " + column + " = " + value.Quote() + " ");
+            return this;
+        }
+
         public QueryBuilder INTO(string table)
         {
             query.Append("INTO " + table.Check());
@@ -106,6 +125,14 @@ namespace Estudio
             return this;
         }
 
+        public QueryBuilder LIMIT(int limit = 1)
+        {
+            query.Append("LIMIT " + limit + " ");
+            return this;
+        }
+
         public override string ToString() => query.ToString().Trim() + ";";
+
+        public MySqlCommand ToCommand(MySqlConnection con) => new MySqlCommand(ToString(), con);
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace Estudio
+﻿using MySql.Data.MySqlClient;
+using System;
+
+namespace Estudio
 {
     public class Aluno
     {
@@ -149,9 +152,11 @@
             Email = email;
             Ativo = true;
 
-            DAO_Connection.CadAluno(cpf, nome, rua, numero, bairro, complemento, cep, cidade, estado, telefone, email);
+            this.CadastrarAluno();
         }
 
         public Aluno() { }
     }
+
+
 }

@@ -8,23 +8,24 @@ using System.Windows.Forms;
 
 namespace Estudio
 {
-    public enum UserType
-    {
-        NotFound = 0,
-        User     = 1,
-        Admin    = 2,
-    }
 
-    public static class StringBuilderExtensions
-    {
-        public static StringBuilder AppendQuote(this StringBuilder builder, string value) => builder.Append(" '").Append(value).Append("' ");
-        public static StringBuilder AppendComma(this StringBuilder builder, string value) => builder.Append(" '").Append(value).Append("', ");
-    }
-
-    public static class DAO_Connection
+    internal static class DAO_Connection
     {
         private static MySqlConnection con;
-        public static bool ConnectionStatus { get; private set; } = false;
+
+        public static MySqlConnection Connection
+        {
+            get
+            {
+                if (con != null || GetConnection())
+                    return con;
+
+                throw new ArgumentException("Impossível fazer a conexão!");
+            }
+        }
+
+        public static bool IsOpen => con != null && con.State == System.Data.ConnectionState.Open;
+        public static bool Connected { get; private set; } = false;
 
         public static bool GetConnection(string host, string database, string user, string password)
         {
@@ -38,68 +39,54 @@ namespace Estudio
                     .ToString();
 
                 con = new MySqlConnection(connectionString);
-                ConnectionStatus = true;
+                Connected = true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                ConnectionStatus = false;
             }
 
-            return ConnectionStatus;
+            return Connected;
         }
 
         public static bool GetConnection()
         {
             return GetConnection("143.106.241.3", "cl201290", "cl201290", "cl*24032006");
         }
+    }
 
-        public static void ExecuteStatement(string sql)
-        {
-            con.Open();
+    public static class LoginDAO
+    {
+        private static MySqlConnection con = DAO_Connection.Connection;
 
-            var command = con.CreateCommand();
-            command.CommandText = sql;
-
-            con.Close();
-        }
-
-        public static UserType Login(string usuario, string senha)
+        public static UserType Login(this Usuario user)
         {
             var utype = UserType.NotFound;
 
             try {
                 con.Open();
 
-                var loginCommand = new QueryBuilder()
+                MySqlDataReader query = new QueryBuilder()
                     .SELECT()
                     .FROM("Estudio_Login")
-                    .WHERE("usuario = " + usuario.Quote())
-                    .AND("senha = " + senha.Quote())
-                    .ToString();
-
-                /*
-                var loginCommand = new StringBuilder()
-                    .Append("SELECT * FROM Estudio_Login where usuario = ").Append("'" + usuario.Check() + "'")
-                    .Append(" and ")
-                    .Append("senha = ").Append("'" + senha.Check() + "';")
-                    .ToString();
-                */
-
-                var query = new MySqlCommand(loginCommand, con).ExecuteReader();
+                    .WHERE("usuario = " + user.User.Quote())
+                    .AND("senha = " + user.Senha.Quote())
+                    .ToCommand(con)
+                    .ExecuteReader();
 
                 if (query.Read())
-                    utype = (UserType)int.Parse(query["tipo"].ToString() ?? "0"); 
+                    utype = (UserType)int.Parse(query["tipo"].ToString() ?? "0");
             } catch (Exception ex) {
                 Console.WriteLine(ex.ToString());
             } finally {
                 con.Close();
             }
 
+            user.AccountType = utype;
             return utype;
         }
 
-        public static bool CadLogin(string user, string password, UserType uType)
+        public static bool CadastrarLogin(this Usuario user)
         {
             bool cadStatus = false;
 
@@ -107,26 +94,13 @@ namespace Estudio
             {
                 con.Open();
 
-                var insert = new QueryBuilder()
+                var query = new QueryBuilder()
                     .INSERT()
                     .INTO("Estudio_Login")
                     .COLUMNS("usuario", "senha", "tipo")
-                    .VALUES(user, password, ((int)uType).ToString())
-                    .ToString();
+                    .VALUES(user.User, user.Senha, ((int)user.AccountType).ToString())
+                    .ToCommand(con);
 
-                /*
-                var insert = new StringBuilder()
-                    .Append("INSERT INTO Estudio_Login(usuario, senha, tipo) VALUES(")
-                    .AppendQuote(user.Check())
-                    .Append(",")
-                    .AppendQuote(password.Check())
-                    .Append(",")
-                    .AppendQuote(((int)uType).ToString())
-                    .Append(")")
-                    .ToString();
-                 */
-
-                var query = new MySqlCommand(insert, con);
                 query.ExecuteNonQuery();
                 cadStatus = true;
             }
@@ -141,10 +115,43 @@ namespace Estudio
 
             return cadStatus;
         }
+    }
 
-        public static bool CadAluno(Aluno al) => CadAluno(al.CPF, al.Nome, al.Rua, al.Numero, al.Bairro, al.Complemento, al.CEP, al.Cidade, al.Estado, al.Telefone, al.Email);
+    public static class AlunoDAO
+    {
+        private static MySqlConnection con = DAO_Connection.Connection;
 
-        public static bool CadAluno(string cpf, string nome, string rua, string numero, string bairro, string complemento, string cep, string cidade, string estado, string telefone, string email)
+        public static bool ConsultarAluno(this Aluno al)
+        {
+            bool exists = false;
+
+            try
+            {
+                con.Open();
+
+                exists = new QueryBuilder()
+                    .SELECT()
+                    .FROM("Estudio_Aluno")
+                    .WHERE("CPFAluno = " + al.CPF.Quote())
+                    .ToCommand(con)
+                    .ExecuteReader()
+                    .Read();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                con.Close();
+            }
+
+            return exists;
+        }
+
+        public static bool CadastrarAluno(this Aluno al) => CadastrarAluno(al.CPF, al.Nome, al.Rua, al.Numero, al.Bairro, al.Complemento, al.CEP, al.Cidade, al.Estado, al.Telefone, al.Email);
+
+        private static bool CadastrarAluno(string cpf, string nome, string rua, string numero, string bairro, string complemento, string cep, string cidade, string estado, string telefone, string email)
         {
             bool status = false;
 
@@ -152,32 +159,43 @@ namespace Estudio
             {
                 con.Open();
 
-                var command = new QueryBuilder()
+                var insert = new QueryBuilder()
                     .INSERT()
                     .INTO("Estudio_Aluno")
                     .COLUMNS("CPFAluno", "nomeAluno", "ruaAluno", "numeroAluno", "bairroAluno", "complementoAluno", "CEPAluno", "cidadeAluno", "estadoAluno", "telefoneAluno", "emailAluno")
                     .VALUES(cpf, nome, rua, numero, bairro, complemento, cep, cidade, estado, telefone, email)
-                    .ToString();
+                    .ToCommand(con);
 
-                /*
-                var command = new StringBuilder("INSERT INTO Estudio_Aluno(CPFAluno, nomeAluno, ruaAluno, numeroAluno, bairroAluno, complementoAluno, CEPAluno, cidadeAluno, estadoAluno, telefoneAluno, emailAluno) VALUES(")
-                    .AppendComma(cpf)
-                    .AppendComma(nome)
-                    .AppendComma(rua)
-                    .AppendComma(numero)
-                    .AppendComma(bairro)
-                    .AppendComma(complemento)
-                    .AppendComma(cep)
-                    .AppendComma(cidade)
-                    .AppendComma(estado)
-                    .AppendComma(telefone)
-                    .AppendQuote(email)
-                    .Append(");")
-                    .ToString();
-                 */
-
-                var insert = new MySqlCommand(command, con);
                 insert.ExecuteNonQuery();
+                status = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                con.Close();
+            }
+
+            return status;
+        }
+
+        public static bool ExcluirAluno(this Aluno al)
+        {
+            bool status = false;
+
+            try
+            {
+                con.Open();
+
+                var commmand = new QueryBuilder()
+                    .UPDATE("Estudio_Aluno")
+                    .SET("ativoAluno", "1")
+                    .WHERE("CPFAluno = " + al.CPF)
+                    .ToCommand(con);
+
+                commmand.ExecuteNonQuery();
                 status = true;
             }
             catch (Exception ex)

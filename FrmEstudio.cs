@@ -28,10 +28,7 @@ namespace Estudio
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            var user  = txtLogin.Text.Trim();
-            var senha = txtSenha.Text.Trim();
-
-            _user = new Usuario(user, senha);
+            _user = new Usuario(txtLogin.Text, txtSenha.Text);
             UserLogin();
         }
 
@@ -39,6 +36,8 @@ namespace Estudio
         {
             if (_user == null)
                 return;
+
+            _user.Login();
 
             switch (_user.AccountType)
             {
