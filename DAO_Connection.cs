@@ -83,7 +83,7 @@ namespace Estudio
             }
 
             user.AccountType = utype;
-            return utype;
+            return user.AccountType;
         }
 
         public static bool CadastrarLogin(this Usuario user)

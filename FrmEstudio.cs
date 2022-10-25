@@ -37,9 +37,7 @@ namespace Estudio
             if (_user == null)
                 return;
 
-            _user.Login();
-
-            switch (_user.AccountType)
+            switch (_user.Login())
             {
                 case UserType.NotFound:
                     MessageBox.Show("Este usuário não foi encontrado.", "Impossível conectar!", MessageBoxButtons.OK, MessageBoxIcon.Error);
