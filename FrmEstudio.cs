@@ -12,7 +12,17 @@ namespace Estudio
 {
     public partial class FrmEstudio : Form
     {
-        private Usuario _user = null;
+        private Usuario _user;
+
+        private Usuario User
+        {
+            get => _user;
+            set
+            {
+                _user = value;
+                UserLogin();
+            }
+        }
 
         public FrmEstudio()
         {
@@ -24,20 +34,41 @@ namespace Estudio
             }
 
             InitializeComponent();
+            User = null;
         }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        public void LoginScreen()
         {
-            _user = new Usuario(txtLogin.Text, txtSenha.Text);
-            UserLogin();
+            gbLogin.Visible = true;
+            menuStrip.Enabled = false;
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            Size = new Size(252, 197);
         }
+
+        public void LoggedScreen()
+        {
+            Size = new Size(800, 700);
+            gbLogin.Visible = false;
+            FormBorderStyle = FormBorderStyle.Sizable;
+        }
+
+        public void AdminScreen()
+        {
+            LoggedScreen();
+            menuStrip.Enabled = true;
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e) => User = new Usuario(txtLogin.Text, txtSenha.Text);
 
         private void UserLogin()
         {
-            if (_user == null)
+            if (User == null)
+            {
+                LoginScreen();
                 return;
+            }
 
-            switch (_user.Login())
+            switch (User.Login())
             {
                 case UserType.NotFound:
                     MessageBox.Show("Este usuário não foi encontrado.", "Impossível conectar!", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -45,14 +76,13 @@ namespace Estudio
                     break;
 
                 case UserType.User:
-                    gbLogin.Visible = false;
-                    MessageBox.Show("Bem vindo(a), " + _user.User + "!", "Login realizado com sucesso.", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoggedScreen();
+                    MessageBox.Show("Bem vindo(a), " + User.User + "!", "Login realizado com sucesso.", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
 
                 case UserType.Admin:
-                    gbLogin.Visible = false;
-                    menuStrip1.Enabled = true;
-                    MessageBox.Show("Olá, administrador(a) " + _user.User + ".", "Login realizado com sucesso.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    AdminScreen();
+                    MessageBox.Show("Olá, administrador(a) " + User.User + ".", "Login realizado com sucesso.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     break;
             }
         }
@@ -73,6 +103,18 @@ namespace Estudio
                 MdiParent = this
             };
             frmCadastrarUsuario.Show();
+        }
+
+        private void modalidaderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void sairToolStripMenuItem_Click(object sender, EventArgs e) => User = null;
+
+        private void txtLogin_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
         }
     }
 }

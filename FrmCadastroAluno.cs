@@ -20,7 +20,21 @@ namespace Estudio
         private void btnCadastrar_Click(object sender, EventArgs e)
         {
             var al = new Aluno(mtxCPF.Text, txtNome.Text, txtEndereco.Text, txtNum.Text, txtBairro.Text, txtComplemento.Text, mtxCEP.Text, txtCidade.Text, txtEstado.Text, mtxTelefone.Text, txtEmail.Text);
-            al.CadastrarAluno();
+
+            if (al.CadastrarAluno())
+            {
+                MessageBox.Show("Aluno cadastrado com sucesso!", "Aviso do Sistema!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Dispose();
+            } else
+                MessageBox.Show("Houve um erro ao cadastrar o aluno.", "Aviso do Sistema", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void NextControl(object sender, KeyEventArgs e)
+        {
+            if (e.KeyChar != ((char)Keys.Enter))
+                return;
+
+            SelectNextControl((Control)sender, true, true, true, true);
         }
     }
 }

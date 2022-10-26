@@ -1,4 +1,7 @@
 ﻿
+using System;
+using System.Windows.Forms;
+
 namespace Estudio
 {
     partial class FrmCadastroAluno
@@ -100,7 +103,7 @@ namespace Estudio
             this.btnPic.Location = new System.Drawing.Point(575, 212);
             this.btnPic.Name = "btnPic";
             this.btnPic.Size = new System.Drawing.Size(194, 23);
-            this.btnPic.TabIndex = 24;
+            this.btnPic.TabIndex = 12;
             this.btnPic.Text = "Escolher foto";
             this.btnPic.UseVisualStyleBackColor = true;
             // 
@@ -117,7 +120,7 @@ namespace Estudio
             this.btnCadastrar.Location = new System.Drawing.Point(9, 212);
             this.btnCadastrar.Name = "btnCadastrar";
             this.btnCadastrar.Size = new System.Drawing.Size(544, 23);
-            this.btnCadastrar.TabIndex = 23;
+            this.btnCadastrar.TabIndex = 11;
             this.btnCadastrar.Text = "Cadastrar";
             this.btnCadastrar.UseVisualStyleBackColor = true;
             this.btnCadastrar.Click += new System.EventHandler(this.btnCadastrar_Click);
@@ -127,7 +130,8 @@ namespace Estudio
             this.txtEmail.Location = new System.Drawing.Point(383, 155);
             this.txtEmail.Name = "txtEmail";
             this.txtEmail.Size = new System.Drawing.Size(170, 20);
-            this.txtEmail.TabIndex = 22;
+            this.txtEmail.TabIndex = 10;
+            this.txtEmail.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NextControl);
             // 
             // lblEmail
             // 
@@ -153,14 +157,16 @@ namespace Estudio
             this.mtxTelefone.Mask = "(99) 00000-0000";
             this.mtxTelefone.Name = "mtxTelefone";
             this.mtxTelefone.Size = new System.Drawing.Size(100, 20);
-            this.mtxTelefone.TabIndex = 19;
+            this.mtxTelefone.TabIndex = 5;
+            this.mtxTelefone.KeyPress += this.NextControl;
             // 
             // txtEstado
             // 
             this.txtEstado.Location = new System.Drawing.Point(383, 128);
             this.txtEstado.Name = "txtEstado";
             this.txtEstado.Size = new System.Drawing.Size(130, 20);
-            this.txtEstado.TabIndex = 18;
+            this.txtEstado.TabIndex = 9;
+            this.txtEstado.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NextControl);
             // 
             // lblEstado
             // 
@@ -176,21 +182,24 @@ namespace Estudio
             this.txtComplemento.Location = new System.Drawing.Point(383, 74);
             this.txtComplemento.Name = "txtComplemento";
             this.txtComplemento.Size = new System.Drawing.Size(130, 20);
-            this.txtComplemento.TabIndex = 16;
+            this.txtComplemento.TabIndex = 7;
+            this.txtComplemento.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NextControl);
             // 
             // txtCidade
             // 
             this.txtCidade.Location = new System.Drawing.Point(383, 101);
             this.txtCidade.Name = "txtCidade";
             this.txtCidade.Size = new System.Drawing.Size(130, 20);
-            this.txtCidade.TabIndex = 15;
+            this.txtCidade.TabIndex = 8;
+            this.txtCidade.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NextControl);
             // 
             // txtNum
             // 
             this.txtNum.Location = new System.Drawing.Point(383, 47);
             this.txtNum.Name = "txtNum";
             this.txtNum.Size = new System.Drawing.Size(130, 20);
-            this.txtNum.TabIndex = 14;
+            this.txtNum.TabIndex = 6;
+            this.txtNum.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NextControl);
             // 
             // lblNum
             // 
@@ -234,7 +243,8 @@ namespace Estudio
             this.mtxCEP.Mask = "00.000-0000";
             this.mtxCEP.Name = "mtxCEP";
             this.mtxCEP.Size = new System.Drawing.Size(67, 20);
-            this.mtxCEP.TabIndex = 9;
+            this.mtxCEP.TabIndex = 4;
+            this.mtxCEP.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NextControl);
             // 
             // lblBairro
             // 
@@ -250,7 +260,8 @@ namespace Estudio
             this.txtBairro.Location = new System.Drawing.Point(77, 101);
             this.txtBairro.Name = "txtBairro";
             this.txtBairro.Size = new System.Drawing.Size(200, 20);
-            this.txtBairro.TabIndex = 7;
+            this.txtBairro.TabIndex = 3;
+            this.txtBairro.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NextControl);
             // 
             // lblEndereco
             // 
@@ -276,21 +287,24 @@ namespace Estudio
             this.mtxCPF.Mask = "000.000.000-00";
             this.mtxCPF.Name = "mtxCPF";
             this.mtxCPF.Size = new System.Drawing.Size(85, 20);
-            this.mtxCPF.TabIndex = 4;
+            this.mtxCPF.TabIndex = 0;
+            this.mtxCPF.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NextControl);
             // 
             // txtEndereco
             // 
             this.txtEndereco.Location = new System.Drawing.Point(77, 74);
             this.txtEndereco.Name = "txtEndereco";
             this.txtEndereco.Size = new System.Drawing.Size(200, 20);
-            this.txtEndereco.TabIndex = 3;
+            this.txtEndereco.TabIndex = 2;
+            this.txtEndereco.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NextControl);
             // 
             // txtNome
             // 
             this.txtNome.Location = new System.Drawing.Point(77, 47);
             this.txtNome.Name = "txtNome";
             this.txtNome.Size = new System.Drawing.Size(200, 20);
-            this.txtNome.TabIndex = 2;
+            this.txtNome.TabIndex = 1;
+            this.txtNome.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NextControl);
             // 
             // lblCPF
             // 
