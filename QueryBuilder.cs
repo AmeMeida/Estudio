@@ -1,14 +1,10 @@
 ﻿using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.Relational;
+using System.Linq;
 using System.Text;
 
 namespace Estudio
 {
-    public static class StringBuilderExtensions
-    {
-        public static StringBuilder AppendQuote(this StringBuilder builder, string value) => builder.Append(" '").Append(value).Append("' ");
-        public static StringBuilder AppendComma(this StringBuilder builder, string value) => builder.Append(" '").Append(value).Append("', ");
-    }
-
     public class QueryBuilder
     {
         private StringBuilder query;
@@ -71,13 +67,20 @@ namespace Estudio
 
         public QueryBuilder UPDATE(string table)
         {
-            query = new StringBuilder("UPDATE " + table + " ");
+            query = new StringBuilder("UPDATE " + table.Check() + " ");
             return this;
         }
 
-        public QueryBuilder SET(string column, string value)
+        public QueryBuilder SET(params (string column, string value)[] updatePairs)
         {
-            query.Append("SET " + column + " = " + value.Quote() + " ");
+            query.Append("SET ");
+
+            if (updatePairs.Length >= 1)
+            {
+                query.Append(Concat(updatePairs.Select(x => x.ToStatement()).ToArray()));
+                query.Append(" ");
+            }
+
             return this;
         }
 
@@ -109,7 +112,7 @@ namespace Estudio
         {
             query.Append("WHERE ");
             if (condition != null)
-                query.Append(condition + " ");
+                query.Append(condition.Check() + " ");
             return this;
         }
 
@@ -125,7 +128,7 @@ namespace Estudio
             return this;
         }
 
-        public QueryBuilder LIMIT(int limit = 1)
+        public QueryBuilder LIMIT(uint limit = 1)
         {
             query.Append("LIMIT " + limit + " ");
             return this;

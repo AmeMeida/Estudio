@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Estudio
 {
@@ -25,10 +25,20 @@ namespace Estudio
         }
 
         public static bool IsOpen => con != null && con.State == System.Data.ConnectionState.Open;
-        public static bool Connected { get; private set; } = false;
-
+        public static bool IsConnected { 
+            get
+            {
+                try {
+                    return Connection.Ping();
+                } catch {
+                    return false;
+                }
+            }
+        }
         public static bool GetConnection(string host, string database, string user, string password)
         {
+            bool connected = false;
+
             try
             {
                 var connectionString = new StringBuilder()
@@ -39,15 +49,17 @@ namespace Estudio
                     .ToString();
 
                 con = new MySqlConnection(connectionString);
-                Connected = true;
+                connected = true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
 
-            return Connected;
+            return connected;
         }
+
+        public static bool TestConnection() => (bool)(Connection?.Ping());
 
         public static bool GetConnection()
         {
@@ -57,7 +69,7 @@ namespace Estudio
 
     public static class LoginDAO
     {
-        private static MySqlConnection con = DAO_Connection.Connection;
+        private static readonly MySqlConnection con = DAO_Connection.Connection;
 
         public static UserType Login(this Usuario user)
         {
@@ -119,7 +131,7 @@ namespace Estudio
 
     public static class AlunoDAO
     {
-        private static MySqlConnection con = DAO_Connection.Connection;
+        private static readonly MySqlConnection con = DAO_Connection.Connection;
 
         public static bool ConsultarAluno(this Aluno al)
         {
@@ -149,9 +161,7 @@ namespace Estudio
             return exists;
         }
 
-        public static bool CadastrarAluno(this Aluno al) => CadastrarAluno(al.CPF, al.Nome, al.Rua, al.Numero, al.Bairro, al.Complemento, al.CEP, al.Cidade, al.Estado, al.Telefone, al.Email);
-
-        private static bool CadastrarAluno(string cpf, string nome, string rua, string numero, string bairro, string complemento, string cep, string cidade, string estado, string telefone, string email)
+        public static bool CadastrarAluno(this Aluno al)
         {
             bool status = false;
 
@@ -163,7 +173,7 @@ namespace Estudio
                     .INSERT()
                     .INTO("Estudio_Aluno")
                     .COLUMNS("CPFAluno", "nomeAluno", "ruaAluno", "numeroAluno", "bairroAluno", "complementoAluno", "CEPAluno", "cidadeAluno", "estadoAluno", "telefoneAluno", "emailAluno")
-                    .VALUES(cpf, nome, rua, numero, bairro, complemento, cep, cidade, estado, telefone, email)
+                    .VALUES(al.CPF, al.Nome, al.Rua, al.Numero, al.Bairro, al.Complemento, al.CEP, al.Cidade, al.Estado, al.Telefone, al.Email)
                     .ToCommand(con);
 
                 insert.ExecuteNonQuery();
@@ -191,7 +201,7 @@ namespace Estudio
 
                 var commmand = new QueryBuilder()
                     .UPDATE("Estudio_Aluno")
-                    .SET("ativoAluno", "1")
+                    .SET(("ativoAluno", "1"))
                     .WHERE("CPFAluno = " + al.CPF)
                     .ToCommand(con);
 
