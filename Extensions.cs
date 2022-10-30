@@ -1,10 +1,12 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Estudio
 {
@@ -18,42 +20,108 @@ namespace Estudio
             {
                 child = typeof(T).GetConstructor(Type.EmptyTypes).Invoke(null) as T;
                 child.MdiParent = form;
-            } 
+            }
             else
             {
                 child = form.MdiChildren.OfType<T>().First();
             }
 
             if (show)
+            {
                 child.Show();
+                child.Focus();
+            }
             return child;
         }
 
-        public static bool VerifyTextBox(this Form form)
+        public static T GetChild<T>(this Form form, FormModes mode) where T : Form, IModalForm
         {
-            foreach(var txt in form.GetNestedControls().OfType<TextBox>().OrderBy(x => x.TabIndex).ToList())
+            var forms = form.MdiChildren.OfType<T>().Where(x => x.Mode == FormModes.Cadastro);
+            T childForm;
+
+            if (forms.Count() < 1)
             {
-                if (string.IsNullOrWhiteSpace(txt.Text))
-                {
-                    txt.Focus();
-                    MessageBox.Show("Todos os campos devem ser preenchidos.", "Campo obrigatório.", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return true;
-                }                
+                childForm = typeof(T).GetConstructor(Type.EmptyTypes).Invoke(null) as T;
+                childForm.MdiParent = form;
             }
+            else
+                childForm = forms.First();
+
+            childForm.Show();
+            childForm.Focus();
+
+            return childForm;
+        }
+
+        public static void ImplementNext(this Form form)
+        {
+            foreach (var txt in form.GetNestedControls<TextBoxBase>().OrderBy(x => x.TabIndex))
+                txt.KeyPress += ControlExtensions.NextControl;
+        }
+    }
+
+    public static class ControlExtensions
+    {
+        public static bool VerifyTextBox(this Control control)
+        {
+            foreach (var txt in control.GetNestedControls<TextBoxBase>().OrderBy(x => x.TabIndex))
+                if (txt.EmptyFieldWarn())
+                    return true;
 
             return false;
         }
 
-        public static Control[] GetNestedControls(this Form form)
+        public static bool EmptyFieldWarn(this TextBoxBase txt)
         {
-            var controls = form.Controls.OfType<Control>();
+            bool isEmpty = txt.IsEmpty();
 
-            foreach (var control in controls)
-                controls = controls.Union(control.Controls.OfType<Control>());
+            if (isEmpty)
+            {
+                txt.Focus();
+                MessageBox.Show("Este campo não pode estar vazio!", "Campo obrigatório.",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
 
-            return controls.ToArray();
+            return isEmpty;
         }
+
+        public static void ClearAllText(this Control control)
+        {
+            foreach (var txt in control.GetNestedControls<TextBoxBase>())
+                txt.Text = string.Empty;
+        }
+
+        public static void SetEnabledAll(this Control control, bool state)
+        {
+            foreach (var ctrl in control.GetNestedControls())
+                ctrl.Enabled = state;
+
+        }
+
+        public static void DisableAll(this Control control) => control.SetEnabledAll(false);
+
+        public static void EnableAll(this Control control) => control.SetEnabledAll(true);
+
+        public static bool IsEmpty(this TextBoxBase txt) 
+            => string.IsNullOrWhiteSpace(txt.Text) || (txt is MaskedTextBox mtx && !mtx.MaskCompleted);
+
+        public static void NextControl(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar != ((char)Keys.Enter))
+                return;
+
+            if (sender is TextBoxBase txt && txt.EmptyFieldWarn())
+                return;
+
+            ((Control)sender).FindForm().SelectNextControl((Control)sender, true, true, true, true);
+        }
+
+        public static IEnumerable<T> GetNestedControls<T>(this Control control) where T : Control
+        {
+            var controls = control.Controls.Cast<Control>();
+            return controls.OfType<T>().Concat(controls.SelectMany(ctrl => GetNestedControls<T>(ctrl)));
+        }
+        public static IEnumerable<Control> GetNestedControls(this Control control) => control.GetNestedControls<Control>();
     }
 
     public static class UpdatePairExtensions
@@ -74,4 +142,13 @@ namespace Estudio
         public static StringBuilder AppendComma(this StringBuilder builder, string value) => builder.Append(" '").Append(value).Append("', ");
     }
 
+    public static class QueryBuilderExtensions
+    {
+        public static MySqlCommand ToCommand(this QueryBuilder builder) => builder.ToCommand(DAO_Connection.Connection);
+    }
+
+    public static class AccountTypeExtensions
+    {
+        public static string ToString(this UserType uType) => ((int)uType).ToString();
+    }
 }

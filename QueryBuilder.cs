@@ -1,7 +1,10 @@
 ﻿using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.Relational;
+using System;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Windows.Forms;
 
 namespace Estudio
 {
@@ -33,7 +36,7 @@ namespace Estudio
             var text = new StringBuilder(values[0].Quote());
 
             for (int i = 1; i < values.Length; i++)
-                text.Append(", " + values[i].Quote());
+                text.Append(", " + (values[i] != "NULL" ? values[i].Quote() : values[i].Check()));
 
             return text.ToString();
         }
@@ -135,7 +138,32 @@ namespace Estudio
         }
 
         public override string ToString() => query.ToString().Trim() + ";";
-
         public MySqlCommand ToCommand(MySqlConnection con) => new MySqlCommand(ToString(), con);
+        public QueryBuilder LogQuery()
+        {
+            if (Params.ShowSQL)
+                Console.WriteLine(ToString());
+            return this;
+        }
+
+        public QueryBuilder DisplayQuery()
+        {
+            if (Params.DisplaySQL)
+            {
+                var result = MessageBox.Show(ToString(), "Query SQL:", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
+
+                switch (result) 
+                {
+                    case DialogResult.Yes:
+                        Clipboard.SetText(ToString());
+                        break;
+
+                    case DialogResult.Cancel:
+                        throw new Exception("Encerrar o programa!");
+                }
+            }
+
+            return this;
+        }
     }
 }

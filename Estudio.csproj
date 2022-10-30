@@ -49,20 +49,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttributesORM.cs" />
     <Compile Include="model\Aluno.cs" />
     <Compile Include="DAO_Connection.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="FormToObjectAttributes.cs" />
+    <Compile Include="model\dao\IDAO.cs" />
+    <Compile Include="model\Modalidade.cs" />
     <Compile Include="view\FrmCadastroAluno.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="view\FrmCadastroAluno.Designer.cs">
       <DependentUpon>FrmCadastroAluno.cs</DependentUpon>
     </Compile>
+    <Compile Include="view\FrmCadastroModalidade.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="view\FrmCadastroModalidade.Designer.cs">
+      <DependentUpon>FrmCadastroModalidade.cs</DependentUpon>
+    </Compile>
     <Compile Include="view\FrmCadastroUsuario.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="view\FrmCadastroUsuario.Designer.cs">
       <DependentUpon>FrmCadastroUsuario.cs</DependentUpon>
+    </Compile>
+    <Compile Include="view\FrmConsultarModalidades.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="view\FrmConsultarModalidades.Designer.cs">
+      <DependentUpon>FrmConsultarModalidades.cs</DependentUpon>
     </Compile>
     <Compile Include="view\FrmConsultarUsuarios.cs">
       <SubType>Form</SubType>
@@ -83,8 +99,14 @@
     <EmbeddedResource Include="view\FrmCadastroAluno.resx">
       <DependentUpon>FrmCadastroAluno.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="view\FrmCadastroModalidade.resx">
+      <DependentUpon>FrmCadastroModalidade.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="view\FrmCadastroUsuario.resx">
       <DependentUpon>FrmCadastroUsuario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="view\FrmConsultarModalidades.resx">
+      <DependentUpon>FrmConsultarModalidades.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="view\FrmConsultarUsuarios.resx">
       <DependentUpon>FrmConsultarUsuarios.cs</DependentUpon>

@@ -2,29 +2,34 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Estudio
 {
 
     internal static class DAO_Connection
     {
-        private static MySqlConnection con;
+        private static MySqlConnection _con;
 
         public static MySqlConnection Connection
         {
             get
             {
-                if (con != null || GetConnection())
-                    return con;
+                if (_con != null || GetConnection())
+                {
+                    return _con;
+                }
 
                 throw new ArgumentException("Impossível fazer a conexão!");
             }
         }
 
-        public static bool IsOpen => con != null && con.State == System.Data.ConnectionState.Open;
+        public static bool IsOpen => _con != null && _con.State == System.Data.ConnectionState.Open;
         public static bool IsConnected { 
             get
             {
@@ -48,7 +53,7 @@ namespace Estudio
                     .Append(";password=").Append(password)
                     .ToString();
 
-                con = new MySqlConnection(connectionString);
+                _con = new MySqlConnection(connectionString);
                 connected = true;
             }
             catch (Exception ex)
@@ -67,31 +72,66 @@ namespace Estudio
         }
     }
 
+    /*
     public static class LoginDAO
     {
-        private static readonly MySqlConnection con = DAO_Connection.Connection;
+        public static Usuario[] GetUsers()
+        {
+            var users = new List<Usuario>();
+
+            try
+            {
+                DAO_Connection.Connection.Open();
+
+                MySqlDataReader query = new QueryBuilder()
+                    .SELECT()
+                    .FROM("Estudio_Login")
+                    .ToCommand(DAO_Connection.Connection)
+                    .ExecuteReader();
+
+                while (query.Read())
+                    users.Add(new Usuario(query["usuario"].ToString(),
+                                          query["senha"].ToString(),
+                                          (UserType)int.Parse(query["tipo"].ToString())));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                DAO_Connection.Connection.Close();
+            }
+
+            return users.ToArray();
+        }
 
         public static UserType Login(this Usuario user)
         {
             var utype = UserType.NotFound;
 
-            try {
-                con.Open();
+            try
+            {
+                DAO_Connection.Connection.Open();
 
                 MySqlDataReader query = new QueryBuilder()
                     .SELECT()
                     .FROM("Estudio_Login")
                     .WHERE("usuario = " + user.User.Quote())
                     .AND("senha = " + user.Senha.Quote())
-                    .ToCommand(con)
+                    .ToCommand(DAO_Connection.Connection)
                     .ExecuteReader();
 
                 if (query.Read())
                     utype = (UserType)int.Parse(query["tipo"].ToString() ?? "0");
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Console.WriteLine(ex.ToString());
-            } finally {
-                con.Close();
+            }
+            finally
+            {
+                DAO_Connection.Connection.Close();
             }
 
             user.AccountType = utype;
@@ -104,14 +144,14 @@ namespace Estudio
 
             try
             {
-                con.Open();
+                DAO_Connection.Connection.Open();
 
                 var query = new QueryBuilder()
                     .INSERT()
                     .INTO("Estudio_Login")
                     .COLUMNS("usuario", "senha", "tipo")
                     .VALUES(user.User, user.Senha, ((int)user.AccountType).ToString())
-                    .ToCommand(con);
+                    .ToCommand(DAO_Connection.Connection);
 
                 query.ExecuteNonQuery();
                 cadStatus = true;
@@ -122,30 +162,77 @@ namespace Estudio
             }
             finally
             {
-                con.Close();
+                DAO_Connection.Connection.Close();
             }
 
             return cadStatus;
         }
-    }
 
+        public static (bool hasUpdated, Usuario user) Update(this Usuario oldUser, Usuario newUser)
+        {
+            var updatePairs = new List<(string column, string value)>();
+            bool hasUpdated = false;
+
+            if (oldUser.Senha != newUser.Senha)
+                updatePairs.Add(("senha", newUser.Senha));
+            if (oldUser.User != newUser.User)
+                updatePairs.Add(("usuario", newUser.User));
+            if (oldUser.AccountType != newUser.AccountType)
+                updatePairs.Add(("tipo", ((int)newUser.AccountType).ToString()));
+
+            if (updatePairs.Count == 0)
+                return (true, oldUser);
+
+            try
+            {
+                DAO_Connection.Connection.Open();
+
+                var query = new QueryBuilder()
+                    .UPDATE("Estudio_Login")
+                    .SET(updatePairs.ToArray())
+                    .WHERE("usuario = " + oldUser.User.Quote())
+                    .AND("senha = " + oldUser.Senha.Quote())
+                    .ToCommand(DAO_Connection.Connection);
+
+                query.ExecuteNonQuery();
+                hasUpdated = true;
+                if (oldUser.Senha != newUser.Senha)
+                    oldUser.Senha = newUser.Senha;
+                if (oldUser.User != newUser.User)
+                    oldUser.User = newUser.User;
+                if (oldUser.AccountType != newUser.AccountType)
+                    oldUser.AccountType = newUser.AccountType;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                DAO_Connection.Connection.Close();
+            }
+
+            return (hasUpdated, oldUser);
+        }
+    }
+    */
+
+    /*
     public static class AlunoDAO
     {
-        private static readonly MySqlConnection con = DAO_Connection.Connection;
-
         public static bool ConsultarAluno(this Aluno al)
         {
             bool exists = false;
 
             try
             {
-                con.Open();
+                DAO_Connection.Connection.Open();
 
                 exists = new QueryBuilder()
                     .SELECT()
                     .FROM("Estudio_Aluno")
                     .WHERE("CPFAluno = " + al.CPF.Quote())
-                    .ToCommand(con)
+                    .ToCommand(DAO_Connection.Connection)
                     .ExecuteReader()
                     .Read();
             }
@@ -155,7 +242,7 @@ namespace Estudio
             }
             finally
             {
-                con.Close();
+                DAO_Connection.Connection.Close();
             }
 
             return exists;
@@ -167,14 +254,14 @@ namespace Estudio
 
             try
             {
-                con.Open();
+                DAO_Connection.Connection.Open();
 
                 var insert = new QueryBuilder()
                     .INSERT()
                     .INTO("Estudio_Aluno")
                     .COLUMNS("CPFAluno", "nomeAluno", "ruaAluno", "numeroAluno", "bairroAluno", "complementoAluno", "CEPAluno", "cidadeAluno", "estadoAluno", "telefoneAluno", "emailAluno")
                     .VALUES(al.CPF, al.Nome, al.Rua, al.Numero, al.Bairro, al.Complemento, al.CEP, al.Cidade, al.Estado, al.Telefone, al.Email)
-                    .ToCommand(con);
+                    .ToCommand(DAO_Connection.Connection);
 
                 insert.ExecuteNonQuery();
                 status = true;
@@ -185,7 +272,7 @@ namespace Estudio
             }
             finally
             {
-                con.Close();
+                DAO_Connection.Connection.Close();
             }
 
             return status;
@@ -197,13 +284,13 @@ namespace Estudio
 
             try
             {
-                con.Open();
+                DAO_Connection.Connection.Open();
 
                 var commmand = new QueryBuilder()
                     .UPDATE("Estudio_Aluno")
                     .SET(("ativoAluno", "1"))
                     .WHERE("CPFAluno = " + al.CPF)
-                    .ToCommand(con);
+                    .ToCommand(DAO_Connection.Connection);
 
                 commmand.ExecuteNonQuery();
                 status = true;
@@ -214,10 +301,11 @@ namespace Estudio
             }
             finally
             {
-                con.Close();
+                DAO_Connection.Connection.Close();
             }
 
             return status;
         }
     }
+    */
 }

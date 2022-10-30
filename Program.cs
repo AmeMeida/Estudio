@@ -6,6 +6,13 @@ using System.Windows.Forms;
 
 namespace Estudio
 {
+    static class Params
+    {
+        public static readonly Usuario defaultUser = new Usuario("Ame", "hehehe");
+        public const bool ShowSQL = false;
+        public const bool DisplaySQL = true;
+    }
+
     static class Program
     {
         /// <summary>
