@@ -37,11 +37,13 @@ namespace Estudio
             this.txtSenha = new System.Windows.Forms.TextBox();
             this.txtUsuario = new System.Windows.Forms.TextBox();
             this.lblUsuario = new System.Windows.Forms.Label();
+            this.chkHasSenha = new System.Windows.Forms.CheckBox();
             this.gbCadastroUsuario.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbCadastroUsuario
             // 
+            this.gbCadastroUsuario.Controls.Add(this.chkHasSenha);
             this.gbCadastroUsuario.Controls.Add(this.lblUserType);
             this.gbCadastroUsuario.Controls.Add(this.btnCadastrarUsuario);
             this.gbCadastroUsuario.Controls.Add(this.cboUserType);
@@ -95,10 +97,10 @@ namespace Estudio
             // 
             // txtSenha
             // 
-            this.txtSenha.Location = new System.Drawing.Point(70, 46);
+            this.txtSenha.Location = new System.Drawing.Point(93, 46);
             this.txtSenha.Name = "txtSenha";
             this.txtSenha.PasswordChar = '*';
-            this.txtSenha.Size = new System.Drawing.Size(250, 20);
+            this.txtSenha.Size = new System.Drawing.Size(227, 20);
             this.txtSenha.TabIndex = 2;
             // 
             // txtUsuario
@@ -117,12 +119,24 @@ namespace Estudio
             this.lblUsuario.TabIndex = 0;
             this.lblUsuario.Text = "Usuário";
             // 
+            // chkHasSenha
+            // 
+            this.chkHasSenha.AutoSize = true;
+            this.chkHasSenha.Location = new System.Drawing.Point(74, 49);
+            this.chkHasSenha.Name = "chkHasSenha";
+            this.chkHasSenha.Size = new System.Drawing.Size(15, 14);
+            this.chkHasSenha.TabIndex = 7;
+            this.chkHasSenha.UseVisualStyleBackColor = true;
+            this.chkHasSenha.CheckedChanged += new System.EventHandler(this.chkHasSenha_CheckedChanged);
+            // 
             // FrmCadastroUsuario
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(332, 109);
             this.Controls.Add(this.gbCadastroUsuario);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "FrmCadastroUsuario";
             this.Text = "FrmCadastroUsuario";
             this.gbCadastroUsuario.ResumeLayout(false);
@@ -141,5 +155,6 @@ namespace Estudio
         private System.Windows.Forms.TextBox txtSenha;
         private System.Windows.Forms.TextBox txtUsuario;
         private System.Windows.Forms.Label lblUsuario;
+        private System.Windows.Forms.CheckBox chkHasSenha;
     }
 }

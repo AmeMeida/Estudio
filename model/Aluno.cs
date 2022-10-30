@@ -1,8 +1,10 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Estudio
 {
+    [Entity, Table("Estudio_Aluno")]
     public class Aluno
     {
         private string _cpf;
@@ -19,122 +21,95 @@ namespace Estudio
         private byte[] _foto;
         private bool _ativo;
 
+        [ID, Column("CPFAluno")]
         public string CPF
         {
             get => _cpf;
-            set
-            {
-                _cpf = value.Check();
-            }
+            set => _cpf = value.Check();
         }
 
-
+        [Column("nomeAluno")]
         public string Nome 
         { 
             get => _nome; 
-            set
-            {
-                _nome = value.Check();
-            }
+            set => _nome = value.Check();
         }
 
+        [Column("ruaAluno")]
         public string Rua
         {
             get => _rua;
-            set
-            {
-                _rua = value.Check();
-            }
+            set => _rua = value.Check();
         }
 
+        [Column("numeroAluno")]
         public string Numero
         {
             get => _numero;
-            set
-            {
-                _numero = value.Check();
-            }
+            set => _numero = value.Check();
         }
 
+        [Column("bairroAluno")]
         public string Bairro
         {
             get => _bairro;
-            set
-            {
-                _bairro = value.Check();
-            }
+            set => _bairro = value.Check();
         }
 
+        [Column("complementoAluno")]
         public string Complemento 
         {
             get => _complemento;
-            set
-            {
-                _complemento = value.Check();
-            } 
+            set => _complemento = value.Check();
         }
 
+        [Column("CEPAluno")]
         public string CEP
         {
             get => _cep;
-            set
-            { 
-                _cep = value.Check();
-            }
+            set => _cep = value.Check();
         }
 
+        [Column("cidadeAluno")]
         public string Cidade
         {
             get => _cidade;
-            set
-            {
-                _cidade = value.Check();
-            }
+            set => _cidade = value.Check();
         }
 
+        [Column("estadoAluno")]
         public string Estado
         {
             get => _estado;
-            set
-            {
-                _estado = value.Check();
-            }
+            set => _estado = value.Check();
         }
 
+        [Column("telefoneAluno")]
         public string Telefone
         {
             get => _telefone;
-            set
-            {
-                _telefone = value.Check();
-            }
+            set => _telefone = value.Check();
         }
 
+        [Column("emailAluno")]
         public string Email
         {
             get => _email;
-            set
-            {
-                _email = value.Check();
-            }
+            set => _email = value.Check();
         }
 
+        [Column("fotoAluno")]
         public byte[] Foto
         {
             get => _foto;
-            set
-            {
-                _foto = value;
-            }
+            set => _foto = value;
         }
 
+        [Column("ativo")]
         public bool Ativo
         {
             get => _ativo;
-            set
-            {
-                _ativo = value;
-            }
+            set => _ativo = value;
         }
 
         public Aluno(string cpf, string nome, string rua, string numero, string bairro, string complemento, string cep, string cidade, string estado, string telefone, string email)
@@ -151,12 +126,16 @@ namespace Estudio
             Telefone = telefone;
             Email = email;
             Ativo = true;
-
-            this.CadastrarAluno();
         }
 
         public Aluno() { }
     }
 
-
+    public static class AlunoDAO
+    {
+        public static bool Cadastrar(this Aluno e) => ORM<Aluno>.Save(e);
+        public static bool Excluir(this Aluno e) => ORM<Aluno>.Update(e, ("ativo", 0)).updateStatus;
+        public static bool Consultar(this Aluno e) => ORM<Aluno>.Check(e);
+        public static Aluno[] List() => ORM<Aluno>.GetAll(("ativo", 1));
+    }
 }

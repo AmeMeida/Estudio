@@ -13,30 +13,30 @@ namespace Estudio
         Admin = 2,
     }
 
-    public static class StringExtensions
-    {
-        public static string Check(this string str) => !string.IsNullOrEmpty(str) ? str.Trim() : throw new ArgumentNullException(nameof(str) + " não deve estar vazio.");
-
-        public static string Quote(this string str) => "'" + str.Check() + "'";
-    }
-
+    [Entity, Table("Estudio_Login")]
     public class Usuario
     {
         private string user;
         private string senha;
 
-        // public static 
+        [Column("tipo")]
+        public UserType AccountType { get; set; }
+
+        [ID, Column("usuario")]
         public string User
         {
             get => user;
             set => user = value.Check();
         }
-        public string Senha 
+
+        [Column("senha")]
+        public string Senha
         {
-            get => senha; 
+            get => senha;
             set => senha = value.Check();
         }
-        public UserType AccountType { get; set; }
+
+        public Usuario() { }
 
         public Usuario(string user, string senha)
         {
@@ -56,5 +56,16 @@ namespace Estudio
                 .Append("Tipo da conta:  ").AppendLine(Enum.GetName(AccountType.GetType(), AccountType))
                 .ToString();
         }
+    }
+
+    public static class LoginDAO
+    {
+        public static bool Cadastrar(this Usuario e) => ORM<Usuario>.Save(e);
+        public static bool Consultar(this Usuario e) => ORM<Usuario>.Check(e);
+        public static Usuario[] List() => ORM<Usuario>.GetAll(("ativo", 1));
+        public static UserType Login(this Usuario e) => (UserType)(ORM<Usuario>.FetchProp(e, "AccountType", true) ?? UserType.NotFound);
+        public static (bool hasUpdated, Usuario updatedUser) Update(this Usuario e, Usuario newUser) 
+            => ORM<Usuario>.UpdateFrom(e, newUser);
+        public static bool Excluir(this Usuario e) => ORM<Usuario>.Update(e, ("ativo", 0)).updateStatus;
     }
 }
