@@ -47,25 +47,8 @@ namespace Estudio
         public static string[] Columns => Proprieties.Select(GetColumn).ToArray();
 
 
-        public static object GetValue(T e, PropertyInfo prop)
-        {
-            if (prop.PropertyType.IsEnum)
-                return (int)prop.GetValue(e);
-
-            var value = prop.GetValue(e);
-
-            if (value is bool @bool)
-                return @bool ? 1 : 0;
-
-            return prop.GetValue(e);
-        }
-        public object GetValue(PropertyInfo prop) => GetValue(MapElement, prop);
-
-
-        public static string GetValueString(T e, PropertyInfo prop) => GetValue(e, prop)?.ToString() ?? "NULL";
-        public string GetValueString(PropertyInfo prop) => GetValueString(MapElement, prop);
-        public static string[] GetValues(T e) => Proprieties.Select(x => GetValueString(e, x)).ToArray();
-        public string[] Values => GetValues(MapElement);
+        public static object[] GetValues(T e) => Proprieties.Select(x => x.GetValue(e)).ToArray();
+        public object[] Values => GetValues(MapElement);
 
 
         public static bool HasAttribute<A>(PropertyInfo prop) where A : Attribute
@@ -73,7 +56,7 @@ namespace Estudio
 
 
         public static (string column, object value) GetColValueTuple(T e, PropertyInfo prop)
-            => (GetColumn(prop), GetValue(e, prop));
+            => (GetColumn(prop), prop.GetValue(e));
         public (string column, object value) GetColValueTuple(PropertyInfo prop)
             => GetColValueTuple(MapElement, prop);
 
@@ -88,7 +71,7 @@ namespace Estudio
         public static string GetEqString(T e, PropertyInfo prop)
         {
             var (column, value) = GetColValueTuple(e, prop);
-            return column + " = " + value.ToString().Quote();
+            return column + " = " + QueryBuilder.FormatValue(value, true);
         }
         public string GetEqString(PropertyInfo prop) => GetEqString(MapElement, prop);
 
@@ -216,14 +199,17 @@ namespace Estudio
                 {
                     var row = (T)typeof(T).GetConstructor(Type.EmptyTypes).Invoke(null);
                     foreach(var prop in Proprieties)
-                        prop.SetValue(row, query[GetColumn(prop)]);
+                    {
+                        var response = query[GetColumn(prop)];
+                        prop.SetValue(row, response is DBNull ? null : response);
+                    }
 
                     list.Add(row);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                MessageBox.Show(ex.Message);
             }
             finally
             {
@@ -249,7 +235,7 @@ namespace Estudio
                 {
                     var query = new QueryBuilder()
                         .UPDATE(Table)
-                        .SET(updatePairs.Select(x => (x.column, x.value.ToString())).ToArray())
+                        .SET(updatePairs.Select(x => (x.column, x.value)).ToArray())
                         .WHERE(GetIDeqString(oldState))
                         .LogQuery()
                         .DisplayQuery()
@@ -289,8 +275,8 @@ namespace Estudio
             var updatePairs = new List<(string column, object value)>();
 
             foreach(var prop in Proprieties)
-                if (prop.GetValue(newState) != null && GetValueString(oldState, prop) != GetValueString(newState, prop))
-                    updatePairs.Add((GetColumn(prop), GetValueString(newState, prop)));
+                if (prop.GetValue(newState) != null && !prop.GetValue(oldState).Equals(prop.GetValue(newState)))
+                    updatePairs.Add((GetColumn(prop), prop.GetValue(newState)));
 
             return Update(oldState, updatePairs.ToArray());
         }

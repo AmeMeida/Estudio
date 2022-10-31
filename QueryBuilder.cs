@@ -21,28 +21,47 @@ namespace Estudio
             }
         }
 
-        public static string Concat(params string[] values)
+        public static string FormatValue(object value, bool addQuotes = false)
         {
-            var text = new StringBuilder(values[0].Check());
+            string valString;
+
+            if (value == null)
+                return "NULL";
+
+            else if (value is bool @bool)
+                valString = @bool ? "1" : "0";
+
+            else if (value.GetType().IsEnum)
+                valString = ((int)value).ToString();
+
+            else
+                valString = value.ToString();
+
+            return addQuotes ? valString.ToString().Quote() : valString.ToString().Check();
+        }
+
+        public static string Concat(params object[] values)
+        {
+            var text = new StringBuilder(FormatValue(values.First()));
 
             for (int i = 1; i < values.Length; i++)
-                text.Append(", " + values[i].Check());
+                text.Append(", " + FormatValue(values[i]));
 
             return text.ToString();
         }
 
-        public static string ConcatWithCommas(string[] values)
+        public static string ConcatWithCommas(params object[] values)
         {
-            var text = new StringBuilder(values[0].Quote());
+            var text = new StringBuilder(FormatValue(values.First(), true));
 
             for (int i = 1; i < values.Length; i++)
-                text.Append(", " + (values[i] != "NULL" ? values[i].Quote() : values[i].Check()));
+                text.Append(", " + FormatValue(values[i], true));
 
             return text.ToString();
         }
 
-        public static string ConcatWithPar(string[] values) => "(" + Concat(values) + ")";
-        public static string ConcatWithCommaPar(string[] values) => "(" + ConcatWithCommas(values) + ")";
+        public static string ConcatWithPar(params object[] values) => "(" + Concat(values) + ")";
+        public static string ConcatWithCommaPar(params object[] values) => "(" + ConcatWithCommas(values) + ")";
 
         public QueryBuilder SELECT(params string[] columns) {
             query = new StringBuilder("SELECT ");
@@ -74,7 +93,7 @@ namespace Estudio
             return this;
         }
 
-        public QueryBuilder SET(params (string column, string value)[] updatePairs)
+        public QueryBuilder SET(params (string column, object value)[] updatePairs)
         {
             query.Append("SET ");
 
@@ -99,7 +118,7 @@ namespace Estudio
             return this;
         }
 
-        public QueryBuilder VALUES(params string[] values)
+        public QueryBuilder VALUES(params object[] values)
         {
             query.Append("VALUES" + ConcatWithCommaPar(values) + " ");
             return this;

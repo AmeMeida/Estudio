@@ -105,7 +105,7 @@ namespace Estudio
         private void ShowCadastroAluno(object sender = null, EventArgs e = null) 
             => this.GetChild<FrmCadastroAluno>(true);
         private void ShowCadastroUsuario(object sender = null, EventArgs e = null) 
-            => this.GetChild<FrmCadastroUsuario>(FormModes.Cadastro);
+            => this.GetChild<FrmCadastroUsuario, Usuario>(FormModes.Cadastro);
 
         private void NextControl(object sender, KeyPressEventArgs e)
         {
@@ -135,9 +135,12 @@ namespace Estudio
         }
 
         private void ShowCadastroModalidade(object sender, EventArgs e)
-            => this.GetChild<FrmCadastroModalidade>(FormModes.Cadastro);
+            => this.GetChild<FrmCadastroModalidade, Modalidade>(FormModes.Cadastro);
 
         private void ShowConsultarModalidades(object sender, EventArgs e)
             => this.GetChild<FrmConsultarModalidades>(true);
+
+        private void ShowConsultarAlunos(object sender, EventArgs e)
+            => this.GetChild<FrmConsultarAlunos>(true);
     }
 }

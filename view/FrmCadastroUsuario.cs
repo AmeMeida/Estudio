@@ -10,8 +10,9 @@ using System.Windows.Forms;
 
 namespace Estudio
 {
-    public interface IModalForm
+    public interface IModalForm<T>
     {
+        T Value { get; set; }
         FormModes Mode { get; set; }
     }
 
@@ -22,18 +23,18 @@ namespace Estudio
         Visualizacao
     }
 
-    public partial class FrmCadastroUsuario : Form, IModalForm
+    public partial class FrmCadastroUsuario : Form, IModalForm<Usuario>
     {
         private FormModes _mode;
-        private Usuario _user;
+        private Usuario _value;
 
-        public Usuario User
+        public Usuario Value
         {
-            get => _user;
+            get => _value;
 
             set
             {
-                _user = value;
+                _value = value;
                 Mode = value == null ? FormModes.Cadastro : FormModes.Edicao;
 
                 if (value != null)
@@ -89,7 +90,7 @@ namespace Estudio
                  where uType != UserType.NotFound
                  select new { Key = Enum.GetName(typeof(UserType), uType), Value = uType }).ToList();
 
-            User = user;
+            Value = user;
             UpdateSaveButton();
             cboUserType.SelectedIndexChanged += UpdateSaveButton;
             txtUsuario.TextChanged += UpdateSaveButton;
@@ -100,7 +101,7 @@ namespace Estudio
 
         public FrmCadastroUsuario() : this(null) { }
          
-        private bool HasChanged => Mode == FormModes.Edicao && (cboUserType.SelectedIndex != -1 && (UserType)cboUserType.SelectedValue != User.AccountType || txtUsuario.Text.Trim() != User.User || (chkHasSenha.Checked && !string.IsNullOrWhiteSpace(txtSenha.Text)));
+        private bool HasChanged => Mode == FormModes.Edicao && (cboUserType.SelectedIndex != -1 && (UserType)cboUserType.SelectedValue != Value.AccountType || txtUsuario.Text.Trim() != Value.User || (chkHasSenha.Checked && !string.IsNullOrWhiteSpace(txtSenha.Text)));
 
         private void UpdateSaveButton(object sender = null, EventArgs e = null)
         {
@@ -120,8 +121,8 @@ namespace Estudio
                     return;
 
                 string senha = 
-                    Mode == FormModes.Cadastro || (chkHasSenha.Checked && !string.IsNullOrWhiteSpace(txtSenha.Text) && txtSenha.Text != User.Senha) 
-                    ? txtSenha.Text : User.Senha;
+                    Mode == FormModes.Cadastro || (chkHasSenha.Checked && !string.IsNullOrWhiteSpace(txtSenha.Text) && txtSenha.Text != Value.Senha) 
+                    ? txtSenha.Text : Value.Senha;
 
                 user = new Usuario(txtUsuario.Text, senha, (UserType)cboUserType.SelectedValue);
             }
@@ -142,11 +143,11 @@ namespace Estudio
                     break;
 
                 case FormModes.Edicao:
-                    var (hasUpdated, updatedUser) = User.Update(user);
+                    var (hasUpdated, updatedUser) = Value.Update(user);
 
                     if (hasUpdated)
                     {
-                        User = updatedUser;
+                        Value = updatedUser;
                         MessageBox.Show("Usuário atualizado com sucesso!", "Aviso do sistema", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         Dispose();
                     }

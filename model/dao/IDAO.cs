@@ -7,5 +7,13 @@ using System.Threading.Tasks;
 
 namespace Estudio.model.dao
 {
-
+    public interface IDAO<T>
+    {
+        bool Save();
+        bool Delete();
+        bool Update(T e);
+        bool Check();
+        string Nome { get; }
+        object ID { get; }
+    }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -34,19 +35,25 @@ namespace Estudio
             return child;
         }
 
-        public static T GetChild<T>(this Form form, FormModes mode) where T : Form, IModalForm
+        public static T GetChild<T, I>(this Form form, FormModes mode, I value)
+            where T : Form, IModalForm<I>
         {
-            var forms = form.MdiChildren.OfType<T>().Where(x => x.Mode == FormModes.Cadastro);
+            var child = GetChild<T, I>(form, mode);
+            child.Value = value;
+            return child;
+        }
+
+        public static T GetChild<T, I>(this Form form, FormModes mode) where T : Form, IModalForm<I>
+        {
+            var forms = form.MdiChildren.OfType<T>().Where(x => x.Mode == mode || x.Mode == FormModes.Visualizacao);
             T childForm;
 
             if (forms.Count() < 1)
-            {
                 childForm = typeof(T).GetConstructor(Type.EmptyTypes).Invoke(null) as T;
-                childForm.MdiParent = form;
-            }
             else
                 childForm = forms.First();
 
+            childForm.MdiParent = form;
             childForm.Show();
             childForm.Focus();
 
@@ -88,7 +95,7 @@ namespace Estudio
         public static void ClearAllText(this Control control)
         {
             foreach (var txt in control.GetNestedControls<TextBoxBase>())
-                txt.Text = string.Empty;
+                txt.ResetText();
         }
 
         public static void SetEnabledAll(this Control control, bool state)
@@ -126,7 +133,7 @@ namespace Estudio
 
     public static class UpdatePairExtensions
     {
-        public static string ToStatement(this (string column, string value) pair) => pair.column.Check() + " = " + pair.value.Quote();
+        public static string ToStatement(this (string column, object value) pair) => pair.column.Check() + " = " + QueryBuilder.FormatValue(pair.value).Quote();
     }
 
     public static class StringExtensions

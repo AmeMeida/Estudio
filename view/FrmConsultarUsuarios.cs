@@ -43,7 +43,7 @@ namespace Estudio.view
             else
             {
                 form = forms.First();
-                form.User = user;
+                form.Value = user;
             }
             
             form.Show();

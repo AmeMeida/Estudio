@@ -1,11 +1,12 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Estudio.model.dao;
+using MySql.Data.MySqlClient;
 using System;
 using System.Runtime.CompilerServices;
 
 namespace Estudio
 {
     [Entity, Table("Estudio_Aluno")]
-    public class Aluno
+    public class Aluno : IDAO<Aluno>
     {
         private string _cpf;
         private string _nome;
@@ -129,13 +130,12 @@ namespace Estudio
         }
 
         public Aluno() { }
-    }
 
-    public static class AlunoDAO
-    {
-        public static bool Cadastrar(this Aluno e) => ORM<Aluno>.Save(e);
-        public static bool Excluir(this Aluno e) => ORM<Aluno>.Update(e, ("ativo", 0)).updateStatus;
-        public static bool Consultar(this Aluno e) => ORM<Aluno>.Check(e);
-        public static Aluno[] List() => ORM<Aluno>.GetAll(("ativo", 1));
+
+        public bool Save() => ORM<Aluno>.Save(this);
+        public bool Delete() => ORM<Aluno>.Update(this, ("ativo", 0)).updateStatus;
+        public bool Check() => ORM<Aluno>.Check(this);
+        public bool Update(Aluno newAluno)
+            => ORM<Aluno>.UpdateFrom(this, newAluno).updateStatus;
     }
 }

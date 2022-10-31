@@ -41,15 +41,15 @@ namespace Estudio
             this.alunoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cadastrarAlunoToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.consultarAlunosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modalidadeToolStripMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.cadastrarModalidadeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.consultarModalidadesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gbLogin = new System.Windows.Forms.GroupBox();
             this.btnLogin = new System.Windows.Forms.Button();
             this.txtSenha = new System.Windows.Forms.TextBox();
             this.txtLogin = new System.Windows.Forms.TextBox();
             this.lblSenha = new System.Windows.Forms.Label();
             this.lblLogin = new System.Windows.Forms.Label();
-            this.modalidadeToolStripMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.cadastrarModalidadeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.consultarModalidadesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.gbLogin.SuspendLayout();
             this.SuspendLayout();
@@ -118,14 +118,14 @@ namespace Estudio
             // cadastrarUsuárioToolStripMenuItem
             // 
             this.cadastrarUsuárioToolStripMenuItem.Name = "cadastrarUsuárioToolStripMenuItem";
-            this.cadastrarUsuárioToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.cadastrarUsuárioToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.cadastrarUsuárioToolStripMenuItem.Text = "Cadastrar usuário";
             this.cadastrarUsuárioToolStripMenuItem.Click += new System.EventHandler(this.ShowCadastroUsuario);
             // 
             // consultarUsuáriosToolStripMenuItem
             // 
             this.consultarUsuáriosToolStripMenuItem.Name = "consultarUsuáriosToolStripMenuItem";
-            this.consultarUsuáriosToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.consultarUsuáriosToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.consultarUsuáriosToolStripMenuItem.Text = "Consultar usuários";
             this.consultarUsuáriosToolStripMenuItem.Click += new System.EventHandler(this.ShowConsultarUsuarios);
             // 
@@ -150,6 +150,30 @@ namespace Estudio
             this.consultarAlunosToolStripMenuItem.Name = "consultarAlunosToolStripMenuItem";
             this.consultarAlunosToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.consultarAlunosToolStripMenuItem.Text = "Consultar alunos";
+            this.consultarAlunosToolStripMenuItem.Click += new System.EventHandler(this.ShowConsultarAlunos);
+            // 
+            // modalidadeToolStripMenu
+            // 
+            this.modalidadeToolStripMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cadastrarModalidadeToolStripMenuItem,
+            this.consultarModalidadesToolStripMenuItem});
+            this.modalidadeToolStripMenu.Name = "modalidadeToolStripMenu";
+            this.modalidadeToolStripMenu.Size = new System.Drawing.Size(82, 20);
+            this.modalidadeToolStripMenu.Text = "&Modalidade";
+            // 
+            // cadastrarModalidadeToolStripMenuItem
+            // 
+            this.cadastrarModalidadeToolStripMenuItem.Name = "cadastrarModalidadeToolStripMenuItem";
+            this.cadastrarModalidadeToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.cadastrarModalidadeToolStripMenuItem.Text = "Cadastrar modalidade";
+            this.cadastrarModalidadeToolStripMenuItem.Click += new System.EventHandler(this.ShowCadastroModalidade);
+            // 
+            // consultarModalidadesToolStripMenuItem
+            // 
+            this.consultarModalidadesToolStripMenuItem.Name = "consultarModalidadesToolStripMenuItem";
+            this.consultarModalidadesToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.consultarModalidadesToolStripMenuItem.Text = "Consultar modalidades";
+            this.consultarModalidadesToolStripMenuItem.Click += new System.EventHandler(this.ShowConsultarModalidades);
             // 
             // gbLogin
             // 
@@ -209,29 +233,6 @@ namespace Estudio
             this.lblLogin.Size = new System.Drawing.Size(33, 13);
             this.lblLogin.TabIndex = 0;
             this.lblLogin.Text = "Login";
-            // 
-            // modalidadeToolStripMenu
-            // 
-            this.modalidadeToolStripMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cadastrarModalidadeToolStripMenuItem,
-            this.consultarModalidadesToolStripMenuItem});
-            this.modalidadeToolStripMenu.Name = "modalidadeToolStripMenu";
-            this.modalidadeToolStripMenu.Size = new System.Drawing.Size(82, 20);
-            this.modalidadeToolStripMenu.Text = "&Modalidade";
-            // 
-            // cadastrarModalidadeToolStripMenuItem
-            // 
-            this.cadastrarModalidadeToolStripMenuItem.Name = "cadastrarModalidadeToolStripMenuItem";
-            this.cadastrarModalidadeToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
-            this.cadastrarModalidadeToolStripMenuItem.Text = "Cadastrar modalidade";
-            this.cadastrarModalidadeToolStripMenuItem.Click += new System.EventHandler(this.ShowCadastroModalidade);
-            // 
-            // consultarModalidadesToolStripMenuItem
-            // 
-            this.consultarModalidadesToolStripMenuItem.Name = "consultarModalidadesToolStripMenuItem";
-            this.consultarModalidadesToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
-            this.consultarModalidadesToolStripMenuItem.Text = "Consultar modalidades";
-            this.consultarModalidadesToolStripMenuItem.Click += new System.EventHandler(this.ShowConsultarModalidades);
             // 
             // FrmEstudio
             // 

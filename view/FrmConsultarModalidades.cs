@@ -44,7 +44,7 @@ namespace Estudio.view
             else
             {
                 form = forms.First();
-                form.Modalidade = modal;
+                form.Value = modal;
             }
             
             form.Show();

@@ -11,16 +11,16 @@ using System.Windows.Forms;
 
 namespace Estudio.view
 {
-    public partial class FrmCadastroModalidade : Form, IModalForm
+    public partial class FrmCadastroModalidade : Form, IModalForm<Modalidade>
     {
-        private Modalidade _modalidade;
-        public Modalidade Modalidade
+        private Modalidade _value;
+        public Modalidade Value
         {
-            get => _modalidade;
+            get => _value;
 
             set
             {
-                _modalidade = value;
+                _value = value;
 
                 if (value != null)
                 {
@@ -78,7 +78,7 @@ namespace Estudio.view
         public FrmCadastroModalidade(Modalidade modalidade)
         {
             InitializeComponent();
-            Modalidade = modalidade;
+            Value = modalidade;
         }
 
         public FrmCadastroModalidade() : this(null) { }
@@ -105,16 +105,16 @@ namespace Estudio.view
                         if (modalidade.Cadastrar())
                         {
                             MessageBox.Show("Modalidade cadastrada em sucesso!", "Aviso do sistema.", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            Modalidade = modalidade;
+                            Value = modalidade;
                         } else
                             MessageBox.Show("Houve um erro ao cadastrar a modalidade, tente novamente mais tarde.", "Erro no cadastro!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
 
                     case FormModes.Edicao:
-                        if (Modalidade.Update(modalidade))
+                        if (Value.Update(modalidade))
                         {
                             MessageBox.Show("Modalidade alterada com sucesso!", "Aviso do sistema.", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            Modalidade = modalidade;
+                            Value = modalidade;
                         }
                         else
                             MessageBox.Show("Não foi possível atualizar a modalidade.", "Aviso do sistema", MessageBoxButtons.OK, MessageBoxIcon.Error);

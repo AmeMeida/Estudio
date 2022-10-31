@@ -106,6 +106,7 @@ namespace Estudio
             // 
             // picAluno
             // 
+            this.picAluno.BackColor = System.Drawing.Color.White;
             this.picAluno.Location = new System.Drawing.Point(575, 19);
             this.picAluno.Name = "picAluno";
             this.picAluno.Size = new System.Drawing.Size(194, 186);

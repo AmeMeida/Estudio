@@ -74,6 +74,12 @@
     <Compile Include="view\FrmCadastroUsuario.Designer.cs">
       <DependentUpon>FrmCadastroUsuario.cs</DependentUpon>
     </Compile>
+    <Compile Include="view\FrmConsultarAlunos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="view\FrmConsultarAlunos.Designer.cs">
+      <DependentUpon>FrmConsultarAlunos.cs</DependentUpon>
+    </Compile>
     <Compile Include="view\FrmConsultarModalidades.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,6 +110,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="view\FrmCadastroUsuario.resx">
       <DependentUpon>FrmCadastroUsuario.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="view\FrmConsultarAlunos.resx">
+      <DependentUpon>FrmConsultarAlunos.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="view\FrmConsultarModalidades.resx">
       <DependentUpon>FrmConsultarModalidades.cs</DependentUpon>
