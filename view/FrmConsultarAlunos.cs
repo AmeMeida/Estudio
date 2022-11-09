@@ -20,9 +20,9 @@ namespace Estudio.view
         private void AtualizarLista(object sender = null, EventArgs e = null)
         {
             if (string.IsNullOrWhiteSpace(txtBuscar.Text))
-                lstBuscar.DataSource = ORM.GetAllAtivos<Aluno>();
+                lstBuscar.DataSource = ORM<Aluno>.GetAll();
             else
-                lstBuscar.DataSource = ORM.GetAllAtivos<Aluno>().Where(x => x.Nome.StartsWith(txtBuscar.Text, true, System.Globalization.CultureInfo.CurrentCulture)).ToList();
+                lstBuscar.DataSource = ORM<Aluno>.GetAll().Where(x => x.Nome.StartsWith(txtBuscar.Text, true, System.Globalization.CultureInfo.CurrentCulture)).ToList();
         }
 
         private void Excluir(object sender = null, EventArgs e = null)

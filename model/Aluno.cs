@@ -113,6 +113,8 @@ namespace Estudio
             set => _ativo = value;
         }
 
+        public object ID => throw new NotImplementedException();
+
         public Aluno(string cpf, string nome, string rua, string numero, string bairro, string complemento, string cep, string cidade, string estado, string telefone, string email)
         {
             CPF = cpf;

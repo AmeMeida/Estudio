@@ -171,14 +171,14 @@ namespace Estudio
             {
                 var result = MessageBox.Show(ToString(), "Query SQL:", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
 
-                switch (result) 
+                switch (result)
                 {
                     case DialogResult.Yes:
                         Clipboard.SetText(ToString());
                         break;
 
                     case DialogResult.Cancel:
-                        throw new Exception("Encerrar o programa!");
+                        throw new Exception("Cancelando!");
                 }
             }
 
