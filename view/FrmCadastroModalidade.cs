@@ -24,15 +24,13 @@ namespace Estudio.view
 
                 if (value != null)
                 {
-                    txtDescricao.Text = value.Descricao;
-                    numPreco.Value = ((decimal)value.Preco);
-                    numQntdAlunos.Value = decimal.Parse(value.Qtde_Alunos.ToString());
-                    numQntdAulas.Value = decimal.Parse(value.Qtde_Aulas.ToString());
-                    Mode = FormModes.Visualizacao;
-                }
-                else
-                {
-                    Mode = FormModes.Cadastro;
+                    if (Mode != FormModes.Edicao)
+                        Mode = FormModes.Visualizacao;
+                    cboBuscar.Text = value.Descricao;
+                    txtDescricao.Text = Value.Descricao;
+                    numPreco.Value = Convert.ToDecimal(Value.Preco);
+                    numQntdAlunos.Value = Convert.ToDecimal(Value.Qtde_Alunos);
+                    numQntdAulas.Value = Convert.ToDecimal(Value.Qtde_Aulas);
                 }
             }
         }
@@ -48,31 +46,53 @@ namespace Estudio.view
                 switch (_mode)
                 {
                     case FormModes.Cadastro:
-                        this.EnableAll();
                         this.ClearAllText();
-                        btnEditar.Visible = false;
+                        this.EnableAll();
+                        ScrVisualizacao();
                         btnCadastro.Text = "Cadastrar";
-                        btnCadastro.Enabled = true;
+                        gbCadastro.Text = "Cadastro";
                         break;
 
                     case FormModes.Edicao:
                         this.EnableAll();
-                        btnEditar.Visible = true;
-                        btnEditar.Enabled = false;
+                        ScrBusca();
                         btnCadastro.Text = "Salvar";
-                        btnCadastro.Enabled = true;
+                        gbCadastro.Text = "Edição";
                         break;
 
                     case FormModes.Visualizacao:
                         this.DisableAll();
-                        btnEditar.Visible = true;
-                        btnEditar.Enabled = true;
-                        btnCadastro.Enabled = false;
-                        btnCadastro.Text = "Salvar";
+                        ScrVisualizacao();
+                        btnCadastro.Enabled = true;
+                        btnCadastro.Text = "Editar";
+                        gbCadastro.Text = "Visualização";
                         break;
                 }
             }
         }
+
+        private void ScrVisualizacao()
+        {
+            Size = new Size(311, 297);
+            gbCadastro.Location = new Point(0, 0);
+            btnCadastro.Location = new Point(12, 225);
+            cboBuscar.Visible = false;
+            lblBusca.Visible = false;
+        }
+
+        private void ScrBusca()
+        {
+            Size = new Size(311, 347);
+            gbCadastro.Location = new Point(0, 52);
+            btnCadastro.Location = new Point(12, 277);
+            cboBuscar.Visible = true;
+            lblBusca.Visible = true;
+            if (Value == null)
+                cboBuscar.SelectedIndex = -1;
+            AtualizarCBO();
+        }
+
+        private void AtualizarCBO() => cboBuscar.DataSource = ORM.GetAllAtivos<Modalidade>();
 
 
         public FrmCadastroModalidade(Modalidade modalidade)
@@ -83,53 +103,52 @@ namespace Estudio.view
 
         public FrmCadastroModalidade() : this(null) { }
 
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
-        }
-
         private void btnCadastro_Click(object sender, EventArgs e)
         {
-            try
+            if (Mode == FormModes.Visualizacao)
+                Mode = FormModes.Edicao;
+            else
             {
-                var modalidade = new Modalidade(txtDescricao.Text, (float)numPreco.Value, (int)numQntdAlunos.Value, (int)numQntdAulas.Value);
-
-                switch (Mode)
+                try
                 {
-                    case FormModes.Cadastro:
-                        if (modalidade.Cadastrar())
-                        {
-                            MessageBox.Show("Modalidade cadastrada em sucesso!", "Aviso do sistema.", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            Value = modalidade;
-                        } else
-                            MessageBox.Show("Houve um erro ao cadastrar a modalidade, tente novamente mais tarde.", "Erro no cadastro!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        break;
+                    var modalidade = new Modalidade(txtDescricao.Text, numPreco.FloatValue(), (int)numQntdAlunos.Value, (int)numQntdAulas.Value);
 
-                    case FormModes.Edicao:
-                        if (Value.Update(modalidade))
-                        {
-                            MessageBox.Show("Modalidade alterada com sucesso!", "Aviso do sistema.", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            Value = modalidade;
-                        }
-                        else
-                            MessageBox.Show("Não foi possível atualizar a modalidade.", "Aviso do sistema", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        break;
+                    switch (Mode)
+                    {
+                        case FormModes.Cadastro:
+                            if (modalidade.Cadastrar())
+                            {
+                                MessageBox.Show("Modalidade cadastrada em sucesso!", "Aviso do sistema.", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                Value = modalidade;
+                            } 
+                            else
+                                MessageBox.Show("Houve um erro ao cadastrar a modalidade, tente novamente mais tarde.", "Erro no cadastro!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            break;
+
+                        case FormModes.Edicao:
+                            if (Value.Update(modalidade))
+                            {
+                                MessageBox.Show("Modalidade alterada com sucesso!", "Aviso do sistema.", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                Value = modalidade;
+                            }
+                            else
+                                MessageBox.Show("Não foi possível atualizar a modalidade.", "Aviso do sistema", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            break;
+                    }
                 }
-            }
-            catch
-            {
-                MessageBox.Show("Os valores inseridos são inválidos. Tente novamente.", "Valores inválidos!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                txtDescricao.Focus();
-                return;
+                catch
+                {
+                    MessageBox.Show("Os valores inseridos são inválidos. Tente novamente.", "Valores inválidos!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtDescricao.Focus();
+                    return;
+                }
             }
         }
 
-        private void btnEditar_Click(object sender, EventArgs e)
-            => Mode = FormModes.Edicao;
+        private void cboBuscar_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cboBuscar.HasSelectedWarn())
+                Value = (Modalidade)cboBuscar.SelectedValue;
+        }
     }
 }

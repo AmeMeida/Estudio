@@ -11,6 +11,7 @@ namespace Estudio
         NotFound = 0,
         User = 1,
         Admin = 2,
+        Isa = 3,
     }
 
     [Entity, Table("Estudio_Login")]
@@ -62,8 +63,14 @@ namespace Estudio
     {
         public static bool Cadastrar(this Usuario e) => ORM<Usuario>.Save(e);
         public static bool Consultar(this Usuario e) => ORM<Usuario>.Check(e);
-        public static Usuario[] List() => ORM<Usuario>.GetAll(("ativo", 1));
-        public static UserType Login(this Usuario e) => (UserType)(ORM<Usuario>.FetchProp(e, "AccountType", true) ?? UserType.NotFound);
+        public static Usuario[] List() => ORM<Usuario>.Select(("ativo", SQLOp.EQ, 1));
+        public static UserType Login(this Usuario e)
+        {
+            var uType = (UserType)(ORM<Usuario>.FetchProp(e, "AccountType", true) ?? UserType.NotFound);
+
+            e.AccountType = uType;
+            return uType;
+        }
         public static (bool hasUpdated, Usuario updatedUser) Update(this Usuario e, Usuario newUser) 
             => ORM<Usuario>.UpdateFrom(e, newUser);
         public static bool Excluir(this Usuario e) => ORM<Usuario>.Update(e, ("ativo", 0)).updateStatus;

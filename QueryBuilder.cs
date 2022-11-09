@@ -1,8 +1,10 @@
 ﻿using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.Relational;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
@@ -21,7 +23,7 @@ namespace Estudio
             }
         }
 
-        public static string FormatValue(object value, bool addQuotes = false)
+        public static string FormatValue(object value, bool addQuotes = false, SQLOp op = SQLOp.EQ)
         {
             string valString;
 
@@ -34,10 +36,31 @@ namespace Estudio
             else if (value.GetType().IsEnum)
                 valString = ((int)value).ToString();
 
+            else if (value is float @float)
+                valString = @float.ToString(CultureInfo.InvariantCulture);
+
+            else if (value is string @string)
+                valString = @string.Replace("'", "''");
+
             else
                 valString = value.ToString();
 
-            return addQuotes ? valString.ToString().Quote() : valString.ToString().Check();
+            switch(op)
+            {
+                case SQLOp.StrStartsWith:
+                    valString = valString.Trim() + "%";
+                    break;
+
+                case SQLOp.StrEndsWith:
+                    valString = "%" + valString.Trim();
+                    break;
+
+                case SQLOp.StrContains:
+                    valString = "%" + valString.Trim() + "%";
+                    break;
+            }
+
+            return addQuotes ? valString.Quote() : valString.Check();
         }
 
         public static string Concat(params object[] values)
@@ -99,8 +122,9 @@ namespace Estudio
 
             if (updatePairs.Length >= 1)
             {
-                query.Append(Concat(updatePairs.Select(x => x.ToStatement()).ToArray()));
-                query.Append(" ");
+                foreach (var pair in updatePairs.Take(updatePairs.Length - 1))
+                    query.Append(pair.column + " = " + FormatValue(pair.value, true) + ", ");
+                query.Append(updatePairs.Last().column + " = " + FormatValue(updatePairs.Last().value, true) + " ");
             }
 
             return this;

@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -13,7 +14,7 @@ namespace Estudio
 {
     public static class FormExtensions
     {
-        public static T GetChild<T>(this Form form, bool show = false) where T : Form
+        public static T GetChild<T>(this Form form, bool show = true) where T : Form
         {
             T child;
 
@@ -45,11 +46,14 @@ namespace Estudio
 
         public static T GetChild<T, I>(this Form form, FormModes mode) where T : Form, IModalForm<I>
         {
-            var forms = form.MdiChildren.OfType<T>().Where(x => x.Mode == mode || x.Mode == FormModes.Visualizacao);
+            var forms = form.MdiChildren.OfType<T>().Where(x => x.Mode == mode || (x.Mode == FormModes.Visualizacao && mode == FormModes.Edicao));
             T childForm;
 
             if (forms.Count() < 1)
+            {
                 childForm = typeof(T).GetConstructor(Type.EmptyTypes).Invoke(null) as T;
+                childForm.Mode = mode;
+            }
             else
                 childForm = forms.First();
 
@@ -131,9 +135,31 @@ namespace Estudio
         public static IEnumerable<Control> GetNestedControls(this Control control) => control.GetNestedControls<Control>();
     }
 
+    public static class ComboBoxExtensions
+    {
+        public static bool HasSelectedWarn(this ComboBox cbo)
+        {
+            bool hasSelected = cbo.SelectedIndex > -1;
+
+            if (!hasSelected)
+            {
+                MessageBox.Show("Por favor, selecione um item!", "Impossível operar: campo não selecionado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                cbo.Focus();
+            }
+            
+            return hasSelected;
+        }
+    }
+
+    public static class NumericUpDownExtensions
+    {
+        public static float FloatValue(this NumericUpDown num)
+            => float.Parse(num.Value.ToString().Replace(",", "."), NumberStyles.Float, CultureInfo.InvariantCulture);
+    }
+
     public static class UpdatePairExtensions
     {
-        public static string ToStatement(this (string column, object value) pair) => pair.column.Check() + " = " + QueryBuilder.FormatValue(pair.value).Quote();
+        public static string ToStatement(this (string column, object value) pair) => pair.column.Check() + " = " + QueryBuilder.FormatValue(pair.value, true);
     }
 
     public static class StringExtensions

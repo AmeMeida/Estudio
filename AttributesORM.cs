@@ -1,14 +1,93 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Estudio
 {
+    public enum SQLOp
+    {
+        EQ,
+        LT,
+        GT,
+        LTEQ,
+        GTEQ,
+        StrStartsWith,
+        StrStartsWithIC,
+        StrEndsWith,
+        StrEndsWithIC,
+        StrContains,
+        StrContainsIC,
+    }
+
+    public static class SQLConditionExtensions
+    {
+        public static readonly Dictionary<SQLOp, SQLOp> IgnoreDic = 
+            new Dictionary<SQLOp, SQLOp>()
+            {
+                { SQLOp.StrStartsWithIC, SQLOp.StrStartsWith },
+                { SQLOp.StrEndsWithIC, SQLOp.StrEndsWith },
+                { SQLOp.StrContainsIC, SQLOp.StrContains },
+            };
+
+
+        public static string ToCondition(this (string column, SQLOp op, object value) condition)
+        {
+            if (IgnoreDic.ContainsKey(condition.op))
+                return ToCondition((condition.column, IgnoreDic[condition.op], condition.value), true);
+            else
+                return ToCondition(condition, false);
+        }
+
+        public static string ToCondition((string column, SQLOp op, object value) condition, bool ignoreCase)
+        {
+            var condString = new StringBuilder();
+            if (ignoreCase)
+                condString.Append("LOWER(" + condition.column.Check() + ")");
+            else
+                condString.Append(condition.column.Check());
+
+            switch (condition.op)
+            {
+                case SQLOp.EQ:
+                    condString.Append(" = ");
+                    break;
+
+                case SQLOp.LT:
+                    condString.Append(" < ");
+                    break;
+
+                case SQLOp.GT:
+                    condString.Append(" > ");
+                    break;
+
+                case SQLOp.LTEQ:
+                    condString.Append(" <= ");
+                    break;
+
+                case SQLOp.GTEQ:
+                    condString.Append(" >= ");
+                    break;
+
+                default:
+                    condString.Append(" LIKE ");
+                    break;
+            }
+
+            var strValue = QueryBuilder.FormatValue(condition.value, true, condition.op);
+            strValue = ignoreCase ? "LOWER(" + strValue + ")" : strValue;
+            condString.Append(strValue);
+            return condString.ToString();
+        }
+    }
+
+
     public class EntityAttribute : Attribute { }
 
     public class TableAttribute : Attribute
@@ -29,6 +108,10 @@ namespace Estudio
 
     public class IDAttribute : Attribute { }
 
+    public static class ORM
+    {
+        public static T[] GetAllAtivos<T>() => ORM<T>.Select(("ativo", SQLOp.EQ, 1));
+    }
 
     public class ORM<T>
     {
@@ -46,47 +129,14 @@ namespace Estudio
 
         public static string[] Columns => Proprieties.Select(GetColumn).ToArray();
 
-
         public static object[] GetValues(T e) => Proprieties.Select(x => x.GetValue(e)).ToArray();
-        public object[] Values => GetValues(MapElement);
-
 
         public static bool HasAttribute<A>(PropertyInfo prop) where A : Attribute
             => prop.GetCustomAttribute<A>() != null;
 
+        public static PropertyInfo IDProp => Proprieties.First(HasAttribute<IDAttribute>);
 
-        public static (string column, object value) GetColValueTuple(T e, PropertyInfo prop)
-            => (GetColumn(prop), prop.GetValue(e));
-        public (string column, object value) GetColValueTuple(PropertyInfo prop)
-            => GetColValueTuple(MapElement, prop);
-
-
-        public static PropertyInfo IDProp => Proprieties.FirstOrDefault(HasAttribute<IDAttribute>);
-
-
-        public static (string column, object value) GetID(T e) => GetColValueTuple(e, IDProp);
-        public (string column, object value) ID => GetID(MapElement);
-
-
-        public static string GetEqString(T e, PropertyInfo prop)
-        {
-            var (column, value) = GetColValueTuple(e, prop);
-            return column + " = " + QueryBuilder.FormatValue(value, true);
-        }
-        public string GetEqString(PropertyInfo prop) => GetEqString(MapElement, prop);
-
-
-        public static string GetIDeqString(T e) => GetEqString(e, IDProp);
-        public string IDeqString => GetIDeqString(MapElement);
-        
-
-        public ORM(T mapElement)
-        {
-            if (typeof(T).GetCustomAttribute<EntityAttribute>() != null)
-                MapElement = mapElement;
-            else
-                throw new ArgumentException("O objeto deve ser uma entidade.");
-        }
+        public static string GetIDeqString(T e) => (GetColumn(IDProp), SQLOp.EQ, IDProp.GetValue(e)).ToCondition();
 
         public static bool Check(T e)
         {
@@ -167,9 +217,8 @@ namespace Estudio
 
             return status;
         }
-        public bool Save() => Save(MapElement);
 
-        public static T[] GetAll(params (string column, object value)[] equalities)
+        public static T[] Select(params (string column, SQLOp op, object value)[] equalities)
         {
             var list = new List<T>();
             
@@ -183,9 +232,9 @@ namespace Estudio
 
                 if (equalities.Count() > 0)
                 {
-                    command.WHERE(equalities[0].column + " = " + equalities[0].value);
+                    command.WHERE(equalities.First().ToCondition());
 
-                    foreach (var eqString in equalities.Skip(1).Select(x => x.column + " = " + x.value))
+                    foreach (var eqString in equalities.Skip(1).Select(x => x.ToCondition()))
                         command.AND(eqString);
                 }
 
@@ -235,7 +284,7 @@ namespace Estudio
                 {
                     var query = new QueryBuilder()
                         .UPDATE(Table)
-                        .SET(updatePairs.Select(x => (x.column, x.value)).ToArray())
+                        .SET(updatePairs)
                         .WHERE(GetIDeqString(oldState))
                         .LogQuery()
                         .DisplayQuery()
@@ -280,8 +329,6 @@ namespace Estudio
 
             return Update(oldState, updatePairs.ToArray());
         }
-        public (bool updateStatus, T newState) UpdateFrom(T newState) => UpdateFrom(MapElement, newState);
-
 
         public static object FetchProp(T e, string searchProp, bool fullSearch = false, params string[] matchValues)
         {
@@ -289,6 +336,15 @@ namespace Estudio
 
             if (!HasAttribute<ColumnAttribute>(prop))
                 throw new ArgumentException("A propriedade deve ser uma coluna");
+
+            var conditions = new List<(string column, SQLOp op, object value)>();
+
+            if (fullSearch || matchValues.Count() > 0)
+            {
+                var usedProps = Proprieties.Where(x => x != prop && (fullSearch || matchValues.Contains(x.Name))).Select(x => (GetColumn(x), SQLOp.EQ, x.GetValue(e)));
+
+                conditions.AddRange(usedProps);
+            }
 
             object res = null;
 
@@ -301,10 +357,9 @@ namespace Estudio
 
                 if (fullSearch || matchValues.Count() > 0)
                 {
-                    var eqStrings = Proprieties.Where(x => x != prop && (fullSearch || matchValues.Contains(x.Name))).Select(x => GetEqString(e, x));
-                    command.WHERE(eqStrings.First());
+                    command.WHERE(conditions.First().ToCondition());
 
-                    foreach (var eqString in eqStrings.Skip(1))
+                    foreach (var eqString in conditions.Skip(1).Select(x => x.ToCondition()))
                         command.AND(eqString);
                 }
                 else
@@ -332,6 +387,5 @@ namespace Estudio
 
             return res;
         }
-        public object FetchProp(string searchProp, bool fullSearch = false, params string[] matchValues) => FetchProp(MapElement, searchProp, fullSearch, matchValues);
     }
 }

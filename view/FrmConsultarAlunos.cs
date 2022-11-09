@@ -11,7 +11,9 @@ using System.Windows.Forms;
 namespace Estudio.view
 {
     public partial class FrmConsultarAlunos : Form
-    {
+    { 
+        public Aluno Value => lstBuscar.SelectedValue as Aluno;
+
         public FrmConsultarAlunos()
         {
             InitializeComponent();
@@ -22,7 +24,7 @@ namespace Estudio.view
             if (string.IsNullOrWhiteSpace(txtBuscar.Text))
                 lstBuscar.DataSource = ORM.GetAllAtivos<Aluno>();
             else
-                lstBuscar.DataSource = ORM.GetAllAtivos<Aluno>().Where(x => x.Nome.StartsWith(txtBuscar.Text, true, System.Globalization.CultureInfo.CurrentCulture)).ToList();
+                lstBuscar.DataSource = ORM<Aluno>.Select(("ativo", SQLOp.EQ, 1), ("nomeAluno", SQLOp.StrStartsWithIC, txtBuscar.Text));
         }
 
         private void Excluir(object sender = null, EventArgs e = null)

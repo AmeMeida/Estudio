@@ -63,6 +63,6 @@ namespace Estudio.model
         public static bool Excluir(this Modalidade e)
             => ORM<Modalidade>.Update(e, ("ativo", 0)).updateStatus;
         public static Modalidade[] List()
-            => ORM<Modalidade>.GetAll(("ativo", 1));
+            => ORM<Modalidade>.Select(("ativo", SQLOp.EQ, 1));
     }
 }

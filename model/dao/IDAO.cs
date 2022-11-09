@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Estudio.model.dao
 {
-    public interface IDAO<T>
+    public interface IDAO<T> where T : class
     {
         bool Save();
         bool Delete();

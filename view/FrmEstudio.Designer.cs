@@ -50,6 +50,7 @@ namespace Estudio
             this.txtLogin = new System.Windows.Forms.TextBox();
             this.lblSenha = new System.Windows.Forms.Label();
             this.lblLogin = new System.Windows.Forms.Label();
+            this.excluirModalidadeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.gbLogin.SuspendLayout();
             this.SuspendLayout();
@@ -156,7 +157,8 @@ namespace Estudio
             // 
             this.modalidadeToolStripMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cadastrarModalidadeToolStripMenuItem,
-            this.consultarModalidadesToolStripMenuItem});
+            this.consultarModalidadesToolStripMenuItem,
+            this.excluirModalidadeToolStripMenuItem});
             this.modalidadeToolStripMenu.Name = "modalidadeToolStripMenu";
             this.modalidadeToolStripMenu.Size = new System.Drawing.Size(82, 20);
             this.modalidadeToolStripMenu.Text = "&Modalidade";
@@ -234,6 +236,13 @@ namespace Estudio
             this.lblLogin.TabIndex = 0;
             this.lblLogin.Text = "Login";
             // 
+            // excluirModalidadeToolStripMenuItem
+            // 
+            this.excluirModalidadeToolStripMenuItem.Name = "excluirModalidadeToolStripMenuItem";
+            this.excluirModalidadeToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.excluirModalidadeToolStripMenuItem.Text = "Excluir modalidade";
+            this.excluirModalidadeToolStripMenuItem.Click += new System.EventHandler(this.ShowExcluirModalidade);
+            // 
             // FrmEstudio
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -278,6 +287,7 @@ namespace Estudio
         private System.Windows.Forms.ToolStripMenuItem modalidadeToolStripMenu;
         private System.Windows.Forms.ToolStripMenuItem cadastrarModalidadeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem consultarModalidadesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem excluirModalidadeToolStripMenuItem;
     }
 }
 

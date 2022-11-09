@@ -137,5 +137,6 @@ namespace Estudio
         public bool Check() => ORM<Aluno>.Check(this);
         public bool Update(Aluno newAluno)
             => ORM<Aluno>.UpdateFrom(this, newAluno).updateStatus;
+        public object ID => CPF;
     }
 }

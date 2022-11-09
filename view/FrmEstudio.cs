@@ -1,16 +1,8 @@
 ﻿using Estudio.model;
 using Estudio.view;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Estudio.FormExtensions;
 
 namespace Estudio
 {
@@ -103,7 +95,7 @@ namespace Estudio
         }
 
         private void ShowCadastroAluno(object sender = null, EventArgs e = null) 
-            => this.GetChild<FrmCadastroAluno>(true);
+            => this.GetChild<FrmCadastroAluno, Aluno>(FormModes.Cadastro);
         private void ShowCadastroUsuario(object sender = null, EventArgs e = null) 
             => this.GetChild<FrmCadastroUsuario, Usuario>(FormModes.Cadastro);
 
@@ -127,7 +119,7 @@ namespace Estudio
         private void Sair(object sender = null, EventArgs e = null) => User = null;
 
         private void ShowConsultarUsuarios(object sender = null, EventArgs e = null) =>
-            this.GetChild<FrmConsultarUsuarios>(true);
+            this.GetChild<FrmConsultarUsuarios>();
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
@@ -138,9 +130,12 @@ namespace Estudio
             => this.GetChild<FrmCadastroModalidade, Modalidade>(FormModes.Cadastro);
 
         private void ShowConsultarModalidades(object sender, EventArgs e)
-            => this.GetChild<FrmConsultarModalidades>(true);
+            => this.GetChild<FrmCadastroModalidade, Modalidade>(FormModes.Edicao);
 
         private void ShowConsultarAlunos(object sender, EventArgs e)
-            => this.GetChild<FrmConsultarAlunos>(true);
+            => this.GetChild<FrmConsultarAlunos>();
+
+        private void ShowExcluirModalidade(object sender, EventArgs e)
+            => this.GetChild<FrmConsultarModalidades>();
     }
 }

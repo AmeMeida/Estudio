@@ -8,8 +8,8 @@ namespace Estudio
 {
     static class Params
     {
-        public static readonly Usuario defaultUser = new Usuario("Ame", "hehehe");
-        public const bool ShowSQL = false;
+        public static readonly Usuario defaultUser = null; // new Usuario("Ame", "hehehe");
+        public const bool ShowSQL = true;
         public const bool DisplaySQL = true;
     }
 
