@@ -34,6 +34,9 @@ namespace Estudio
             else if (value.GetType().IsEnum)
                 valString = ((int)value).ToString();
 
+            else if (value is string @string)
+                valString = @string.Check().Replace("'", "''");
+
             else
                 valString = value.ToString();
 
