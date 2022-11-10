@@ -41,7 +41,7 @@ namespace Estudio
         {
             gbLogin.ClearAllText();
             gbLogin.Visible = false;
-            Size = new Size(800, 600);
+            Size = new Size(1000, 800);
             FormBorderStyle = FormBorderStyle.Sizable;
             MaximizeBox = true;
         }
