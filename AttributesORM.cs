@@ -2,6 +2,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data.OleDb;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -28,6 +30,33 @@ namespace Estudio
 
     public static class SQLConditionExtensions
     {
+        public static SQLOp Normalize(this SQLOp op)
+        {
+            try { return IgnoreDic[op]; } catch (KeyNotFoundException) { return op; }
+        }
+
+        public static string Format(this SQLOp op, string value)
+        {
+            value = value.Check();
+
+            switch (op.Normalize())
+            {
+                case SQLOp.StrStartsWith:
+                    return value + "%";
+
+                case SQLOp.StrEndsWith:
+                    return "%" + value;
+
+                case SQLOp.StrContains:
+                    return "%" + value + "%";
+
+                default:
+                    return value;
+            }
+        }
+
+        public static bool isIgnoreCase(this SQLOp op) => IgnoreDic.ContainsKey(op);
+
         public static readonly Dictionary<SQLOp, SQLOp> IgnoreDic = 
             new Dictionary<SQLOp, SQLOp>()
             {
@@ -36,24 +65,17 @@ namespace Estudio
                 { SQLOp.StrContainsIC, SQLOp.StrContains },
             };
 
-
-        public static string ToCondition(this (string column, SQLOp op, object value) condition)
+        public static string ToClause(this (string column, SQLOp op, object value) condition)
         {
-            if (IgnoreDic.ContainsKey(condition.op))
-                return ToCondition((condition.column, IgnoreDic[condition.op], condition.value), true);
-            else
-                return ToCondition(condition, false);
-        }
+            bool ignoreCase = condition.op.isIgnoreCase();
 
-        public static string ToCondition((string column, SQLOp op, object value) condition, bool ignoreCase)
-        {
             var condString = new StringBuilder();
             if (ignoreCase)
                 condString.Append("LOWER(" + condition.column.Check() + ")");
             else
                 condString.Append(condition.column.Check());
 
-            switch (condition.op)
+            switch (condition.op.Normalize())
             {
                 case SQLOp.EQ:
                     condString.Append(" = ");
@@ -85,20 +107,46 @@ namespace Estudio
             condString.Append(strValue);
             return condString.ToString();
         }
+
+        public static (string column, SQLOp op, object value) ToCondition(this (string column, object value) updatePair) => (updatePair.column, SQLOp.EQ, updatePair.value);
     }
 
 
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class EntityAttribute : Attribute { }
 
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class TableAttribute : Attribute
     {
         public string Name { get; set; }
         public TableAttribute(string name) => Name = name;
     }
 
+    public delegate object Parse(object obj);
+
+    [AttributeUsage(AttributeTargets.Property)]
     public class ColumnAttribute : Attribute
     {
         public string Name { get; set; }
+        public Parse sqlParser;
+        public Parse csParser;
+
+        public object ToSQL(object obj)
+        {
+            if (obj != null && sqlParser.GetInvocationList().Length > 0)
+                obj = sqlParser(obj);
+            return obj;
+        }
+
+        public object ToCS(object obj)
+        {
+            if (obj is DBNull)
+                return null;
+            else if (csParser.GetInvocationList().Length == 0)
+                return obj;
+            else
+                return csParser(obj);
+        }
 
         public ColumnAttribute(string name)
         {
@@ -106,10 +154,47 @@ namespace Estudio
         }
     }
 
+    [AttributeUsage(AttributeTargets.Property)]
     public class IDAttribute : Attribute { }
+
+    public class Column
+    {
+        public static Column[] ToArray<T>(T obj) => typeof(T).GetProperties().Where(ORM.HasAttribute<ColumnAttribute>).Select(x => new Column(obj, x)).ToArray();
+        public PropertyInfo Prop { get; set; }
+        public ColumnAttribute ColAttr => Prop.GetCustomAttribute<ColumnAttribute>();
+        public object Obj { get; set; }
+        public string ColName => ColAttr.Name;
+        public (string column, SQLOp op, object value) ToCondition(SQLOp op) => (ColName, op, Value);
+        public string ToConditionStr(SQLOp op) => ToCondition(op).ToClause();
+        public string ToEQString() => ToConditionStr(SQLOp.EQ);
+        public (string column, object value) ToPair() => (ColName, Value);
+
+        public object Value
+        {
+            get => ColAttr.ToSQL(Prop.GetValue(Obj));
+            set => Prop.SetValue(Obj, Value is DBNull ? null : ColAttr.ToCS(value));
+        }
+
+        public static Column IDCol(object obj) => new Column(obj, obj.GetType().GetProperties().First(ORM.HasAttribute<IDAttribute>));
+        public static string IDEqString(object obj) => IDCol(obj).ToEQString();
+
+        public Column(object obj, PropertyInfo prop)
+        {
+            this.Obj = obj;
+            Prop = prop;
+        }
+
+        public Column(object obj, string prop)
+        {
+            this.Obj = obj;
+            Prop = obj.GetType().GetProperty(prop);
+        }
+    }
 
     public static class ORM
     {
+        public static bool HasAttribute<T>(this PropertyInfo prop) where T : Attribute
+            => prop.GetCustomAttribute<T>() != null;
         public static T[] GetAllAtivos<T>() => ORM<T>.Select(("ativo", SQLOp.EQ, 1));
     }
 
@@ -122,21 +207,12 @@ namespace Estudio
         public static IEnumerable<PropertyInfo> Proprieties =>
             typeof(T)
             .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-            .Where(HasAttribute<ColumnAttribute>);
+            .Where(ORM.HasAttribute<ColumnAttribute>);
 
         public static string GetColumn(PropertyInfo prop)
             => prop.GetCustomAttribute<ColumnAttribute>().Name;
 
-        public static string[] Columns => Proprieties.Select(GetColumn).ToArray();
-
-        public static object[] GetValues(T e) => Proprieties.Select(x => x.GetValue(e)).ToArray();
-
-        public static bool HasAttribute<A>(PropertyInfo prop) where A : Attribute
-            => prop.GetCustomAttribute<A>() != null;
-
-        public static PropertyInfo IDProp => Proprieties.First(HasAttribute<IDAttribute>);
-
-        public static string GetIDeqString(T e) => (GetColumn(IDProp), SQLOp.EQ, IDProp.GetValue(e)).ToCondition();
+        public static PropertyInfo IDProp => Proprieties.First(ORM.HasAttribute<IDAttribute>);
 
         public static bool Check(T e)
         {
@@ -149,10 +225,10 @@ namespace Estudio
                 var query = new QueryBuilder()
                     .SELECT()
                     .FROM(Table)
-                    .WHERE(GetIDeqString(e))
+                    .WHERE(Column.IDEqString(e))
                     .LogQuery()
                     .DisplayQuery()
-                    .ToCommand(DAO_Connection.Connection)
+                    .ToCommand()
                     .ExecuteReader();
 
                 exists = query.Read();
@@ -168,8 +244,6 @@ namespace Estudio
 
             return exists;
         }
-        public bool Check() => Check(MapElement);
-
 
         public static bool Save(T e)
         {
@@ -182,16 +256,32 @@ namespace Estudio
 
                 try
                 {
+                    var cols = Column.ToArray(e);
 
-                    var query = new QueryBuilder()
-                        .INSERT()
-                        .INTO(Table)
-                        .COLUMNS(Columns)
-                        .VALUES(GetValues(e))
-                        .LogQuery()
-                        .DisplayQuery()
-                        .ToCommand(DAO_Connection.Connection)
-                        .ExecuteNonQuery();
+                    if (!Check(e))
+                    {
+                        new QueryBuilder()
+                            .INSERT()
+                            .INTO(Table)
+                            .COLUMNS(cols.Select(x => x.ColName).ToArray())
+                            .VALUES(cols.Select(x => x.Value).ToArray())
+                            .LogQuery()
+                            .DisplayQuery()
+                            .ToCommand(DAO_Connection.Connection)
+                            .ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        new QueryBuilder()
+                            .UPDATE(Table)
+                            .SET(cols.Select((x) => x.ToPair()).ToArray())
+                            .WHERE(Column.IDEqString(e))
+                            .LIMIT()
+                            .LogQuery()
+                            .DisplayQuery()
+                            .ToCommand()
+                            .ExecuteNonQuery();
+                    }
 
                     trans.Commit();
                     status = true;
@@ -232,9 +322,9 @@ namespace Estudio
 
                 if (equalities.Count() > 0)
                 {
-                    command.WHERE(equalities.First().ToCondition());
+                    command.WHERE(equalities.First().ToClause());
 
-                    foreach (var eqString in equalities.Skip(1).Select(x => x.ToCondition()))
+                    foreach (var eqString in equalities.Skip(1).Select(x => x.ToClause()))
                         command.AND(eqString);
                 }
 
@@ -247,12 +337,8 @@ namespace Estudio
                 while (query.Read())
                 {
                     var row = (T)typeof(T).GetConstructor(Type.EmptyTypes).Invoke(null);
-                    foreach(var prop in Proprieties)
-                    {
-                        var response = query[GetColumn(prop)];
-                        prop.SetValue(row, response is DBNull ? null : response);
-                    }
-
+                    foreach (var column in Column.ToArray(row))
+                        column.Value = query[column.ColName];
                     list.Add(row);
                 }
             }
@@ -272,7 +358,7 @@ namespace Estudio
         {
             bool updateState = false;
 
-            if (updatePairs.Count() <= 0)
+            if (updatePairs == null || updatePairs.Count() <= 0)
                 return (true, oldState);
 
             try
@@ -285,7 +371,7 @@ namespace Estudio
                     var query = new QueryBuilder()
                         .UPDATE(Table)
                         .SET(updatePairs)
-                        .WHERE(GetIDeqString(oldState))
+                        .WHERE(Column.IDEqString(oldState))
                         .LogQuery()
                         .DisplayQuery()
                         .ToCommand()
@@ -295,7 +381,9 @@ namespace Estudio
                     updateState = true;
 
                     foreach (var (column, value) in updatePairs)
-                        Proprieties.First(x => GetColumn(x) == column).SetValue(oldState, value);
+                    {
+                        new Column(oldState, Proprieties.First(x => GetColumn(x) == column)).Value = value;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -319,31 +407,34 @@ namespace Estudio
             return (updateState, oldState);
         }
 
-        public static (bool updateStatus, T newState) UpdateFrom(T oldState, T newState)
+        public static (bool updateStatus, T newState) UpdateFrom(T oldState, T newState, bool ignoreNulls = true)
         {
             var updatePairs = new List<(string column, object value)>();
 
             foreach(var prop in Proprieties)
-                if (prop.GetValue(newState) != null && !prop.GetValue(oldState).Equals(prop.GetValue(newState)))
-                    updatePairs.Add((GetColumn(prop), prop.GetValue(newState)));
+            {
+                if ((!ignoreNulls || prop.GetValue(newState) != null) && !prop.GetValue(oldState).Equals(prop.GetValue(newState)))
+                    updatePairs.Add(new Column(newState, prop).ToPair());
+            }
 
-            return Update(oldState, updatePairs.ToArray());
+            return Update(oldState, updatePairs.Count > 0 ? updatePairs.ToArray() : null);
         }
 
         public static object FetchProp(T e, string searchProp, bool fullSearch = false, params string[] matchValues)
         {
-            var prop = Proprieties.First(x => x.Name == searchProp); ;
+            var prop = Proprieties.First(x => x.Name == searchProp);
 
-            if (!HasAttribute<ColumnAttribute>(prop))
+            if (!prop.HasAttribute<ColumnAttribute>())
                 throw new ArgumentException("A propriedade deve ser uma coluna");
 
-            var conditions = new List<(string column, SQLOp op, object value)>();
+            var conditions = new List<string>();
 
-            if (fullSearch || matchValues.Count() > 0)
+            if (fullSearch || (matchValues != null && matchValues.Count() > 0))
             {
-                var usedProps = Proprieties.Where(x => x != prop && (fullSearch || matchValues.Contains(x.Name))).Select(x => (GetColumn(x), SQLOp.EQ, x.GetValue(e)));
-
-                conditions.AddRange(usedProps);
+                foreach (var property in Proprieties.Where((x) => x != prop && (fullSearch || matchValues.Contains(x.Name))))
+                {
+                    conditions.Add(new Column(e, property).ToEQString());
+                }
             }
 
             object res = null;
@@ -357,14 +448,14 @@ namespace Estudio
 
                 if (fullSearch || matchValues.Count() > 0)
                 {
-                    command.WHERE(conditions.First().ToCondition());
+                    command.WHERE(conditions.First());
 
-                    foreach (var eqString in conditions.Skip(1).Select(x => x.ToCondition()))
+                    foreach (var eqString in conditions.Skip(1))
                         command.AND(eqString);
                 }
                 else
                 {
-                    command.WHERE(GetIDeqString(e));
+                    command.WHERE(Column.IDEqString(e));
                 }
 
                 var query = command

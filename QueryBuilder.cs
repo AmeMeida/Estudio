@@ -29,37 +29,14 @@ namespace Estudio
 
             if (value == null)
                 return "NULL";
-
-            else if (value is bool @bool)
-                valString = @bool ? "1" : "0";
-
-            else if (value.GetType().IsEnum)
-                valString = ((int)value).ToString();
-
-            else if (value is float @float)
-                valString = @float.ToString(CultureInfo.InvariantCulture);
-
             else if (value is string @string)
                 valString = @string.Replace("'", "''");
-
+            else if (value is float || value is double || value is decimal)
+                valString = value.ToString().Replace(",", ".");
             else
                 valString = value.ToString();
 
-            switch(op)
-            {
-                case SQLOp.StrStartsWith:
-                    valString = valString.Trim() + "%";
-                    break;
-
-                case SQLOp.StrEndsWith:
-                    valString = "%" + valString.Trim();
-                    break;
-
-                case SQLOp.StrContains:
-                    valString = "%" + valString.Trim() + "%";
-                    break;
-            }
-
+            valString = op.Format(valString);
             return addQuotes ? valString.Quote() : valString.Check();
         }
 
@@ -123,8 +100,8 @@ namespace Estudio
             if (updatePairs.Length >= 1)
             {
                 foreach (var pair in updatePairs.Take(updatePairs.Length - 1))
-                    query.Append(pair.column + " = " + FormatValue(pair.value, true) + ", ");
-                query.Append(updatePairs.Last().column + " = " + FormatValue(updatePairs.Last().value, true) + " ");
+                    query.Append(UpdatePairExtensions.ToClause(pair) + ", ");
+                query.Append(UpdatePairExtensions.ToClause(updatePairs.Last()) + " ");
             }
 
             return this;

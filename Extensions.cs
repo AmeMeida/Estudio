@@ -159,7 +159,7 @@ namespace Estudio
 
     public static class UpdatePairExtensions
     {
-        public static string ToStatement(this (string column, object value) pair) => pair.column.Check() + " = " + QueryBuilder.FormatValue(pair.value, true);
+        public static string ToClause(this (string column, object value) pair) => pair.ToCondition().ToClause();
     }
 
     public static class StringExtensions
