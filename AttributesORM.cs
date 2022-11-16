@@ -128,12 +128,13 @@ namespace Estudio
     public class ColumnAttribute : Attribute
     {
         public string Name { get; set; }
+        public bool autoIncrement = false;
         public Parse sqlParser;
         public Parse csParser;
 
         public object ToSQL(object obj)
         {
-            if (obj != null && sqlParser.GetInvocationList().Length > 0)
+            if (obj != null && sqlParser != null && sqlParser.GetInvocationList().Length > 0)
                 obj = sqlParser(obj);
             return obj;
         }
@@ -142,7 +143,7 @@ namespace Estudio
         {
             if (obj is DBNull)
                 return null;
-            else if (csParser.GetInvocationList().Length == 0)
+            else if (csParser == null || csParser.GetInvocationList().Length == 0)
                 return obj;
             else
                 return csParser(obj);
@@ -159,7 +160,11 @@ namespace Estudio
 
     public class Column
     {
-        public static Column[] ToArray<T>(T obj) => typeof(T).GetProperties().Where(ORM.HasAttribute<ColumnAttribute>).Select(x => new Column(obj, x)).ToArray();
+        public static Column[] ToArray(object obj)
+            => obj.GetType().GetProperties()
+                .Where(ORM.HasAttribute<ColumnAttribute>)
+                .Select(x => new Column(obj, x)).ToArray();
+
         public PropertyInfo Prop { get; set; }
         public ColumnAttribute ColAttr => Prop.GetCustomAttribute<ColumnAttribute>();
         public object Obj { get; set; }
@@ -256,7 +261,7 @@ namespace Estudio
 
                 try
                 {
-                    var cols = Column.ToArray(e);
+                    var cols = Column.ToArray(e).Where(x => !x.ColAttr.autoIncrement);
 
                     if (!Check(e))
                     {
@@ -267,7 +272,7 @@ namespace Estudio
                             .VALUES(cols.Select(x => x.Value).ToArray())
                             .LogQuery()
                             .DisplayQuery()
-                            .ToCommand(DAO_Connection.Connection)
+                            .ToCommand()
                             .ExecuteNonQuery();
                     }
                     else
@@ -352,6 +357,68 @@ namespace Estudio
             }
 
             return list.Count > 0 ? list.ToArray() : null;
+        }
+
+        public static bool Delete(T e, params string[] fields)
+        {
+            bool updateState = false;
+
+            if (e == null)
+                return false;
+
+            try
+            {
+                DAO_Connection.Connection.Open();
+                var trans = DAO_Connection.Connection.BeginTransaction();
+
+                try
+                {
+                    var query = new QueryBuilder()
+                        .DELETE()
+                        .FROM(Table);
+
+                    if (fields == null || fields.Length == 0)
+                    {
+                        query.WHERE(Column.IDEqString(e));
+                    }
+                    else
+                    {
+                        query.WHERE(new Column(e, fields.First()).ToEQString());
+
+                        foreach (var field in fields.Skip(1))
+                            query.AND(new Column(e, field).ToEQString());
+                    }
+
+                    query
+                        .LIMIT()
+                        .LogQuery()
+                        .DisplayQuery()
+                        .ToCommand()
+                        .ExecuteNonQuery();
+                    
+                    trans.Commit();
+                    updateState = true;
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    trans.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                DAO_Connection.Connection.Close();
+            }
+
+            return updateState;
         }
 
         public static (bool updateStatus, T newState) Update(T oldState, params (string column, object value)[] updatePairs)

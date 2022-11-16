@@ -137,5 +137,10 @@ namespace Estudio
 
         private void ShowExcluirModalidade(object sender, EventArgs e)
             => this.GetChild<FrmConsultarModalidades>();
+
+        private void cadastrarTurmaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.GetChild<FrmConsultarTurma>();
+        }
     }
 }

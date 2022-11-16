@@ -106,7 +106,7 @@ namespace Estudio
             set => _foto = value;
         }
 
-        [Column("ativo", sqlParser = (x) => (bool)x ? 1 : 0)]
+        [Column("ativo")]
         public bool Ativo
         {
             get => _ativo;

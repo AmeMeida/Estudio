@@ -22,6 +22,9 @@ namespace Estudio.model
             set => _descricao = value.Check();
         }
 
+        [Column("idEstudio_Modalidade", autoIncrement = true)]
+        public int ID { get; set; }
+
         [Column("precoModalidade")]
         public float Preco
         {
