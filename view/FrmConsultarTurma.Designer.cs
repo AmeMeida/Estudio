@@ -140,6 +140,7 @@ namespace Estudio.view
             this.txtProfessor.Name = "txtProfessor";
             this.txtProfessor.Size = new System.Drawing.Size(249, 20);
             this.txtProfessor.TabIndex = 2;
+            this.txtProfessor.TextChanged += new System.EventHandler(this.txtProfessor_TextChanged);
             // 
             // cbModalidade
             // 

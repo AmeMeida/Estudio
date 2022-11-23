@@ -41,16 +41,21 @@ namespace Estudio.view
         {
             var turma = new Turma
             {
-                Horas = mtxHora.Text,
-                DiasSemana = DiasSemana(),
-                IDModalidade = ((Modalidade)cbModalidade.SelectedValue).ID,
+                Hora = mtxHora.Text,
+                DiaSemana = DiasSemana(),
+                Modalidade = ((Modalidade)cbModalidade.SelectedValue).Descricao,
                 Professor = txtProfessor.Text
             };
 
-            if (turma.Save())
+            if (turma.Cadastrar())
                 MessageBox.Show("Turma salva com sucesso!", "Turma cadastrada.", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
                 MessageBox.Show("Houve um erro ao cadastrar a turma.", "Impossível cadastrar!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void txtProfessor_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
