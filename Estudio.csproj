@@ -93,6 +93,12 @@
     <Compile Include="view\FrmConsultarModalidades.Designer.cs">
       <DependentUpon>FrmConsultarModalidades.cs</DependentUpon>
     </Compile>
+    <Compile Include="view\FrmConsultarTurma.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="view\FrmConsultarTurma.Designer.cs">
+      <DependentUpon>FrmConsultarTurma.cs</DependentUpon>
+    </Compile>
     <Compile Include="view\FrmConsultarUsuarios.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -126,6 +132,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="view\FrmConsultarModalidades.resx">
       <DependentUpon>FrmConsultarModalidades.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="view\FrmConsultarTurma.resx">
+      <DependentUpon>FrmConsultarTurma.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="view\FrmConsultarUsuarios.resx">
       <DependentUpon>FrmConsultarUsuarios.cs</DependentUpon>

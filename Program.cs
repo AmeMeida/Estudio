@@ -9,7 +9,7 @@ namespace Estudio
     static class Params
     {
         public static readonly Usuario defaultUser = null;
-        public const bool ShowSQL = false;
+        public const bool ShowSQL = true;
         public const bool DisplaySQL = true;
     }
 

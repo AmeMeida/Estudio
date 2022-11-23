@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Management.Instrumentation;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -42,6 +39,7 @@ namespace Estudio.model
         }
 
         public Turma() { }
+
     }
 
     public static class TurmaDAO

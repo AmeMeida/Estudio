@@ -128,6 +128,7 @@ namespace Estudio
     public class ColumnAttribute : Attribute
     {
         public string Name { get; set; }
+        public bool autoIncrement = false;
         public Parse sqlParser;
         public Parse csParser;
 
@@ -159,7 +160,11 @@ namespace Estudio
 
     public class Column
     {
-        public static Column[] ToArray<T>(T obj) => typeof(T).GetProperties().Where(ORM.HasAttribute<ColumnAttribute>).Select(x => new Column(obj, x)).ToArray();
+        public static Column[] ToArray(object obj)
+            => obj.GetType().GetProperties()
+                .Where(ORM.HasAttribute<ColumnAttribute>)
+                .Select(x => new Column(obj, x)).ToArray();
+
         public PropertyInfo Prop { get; set; }
         public ColumnAttribute ColAttr => Prop.GetCustomAttribute<ColumnAttribute>();
         public object Obj { get; set; }
@@ -251,13 +256,12 @@ namespace Estudio
 
             try
             {
-                if (DAO_Connection.Connection.State != System.Data.ConnectionState.Open)
-                    DAO_Connection.Connection.Open();
+                DAO_Connection.Connection.Open();
                 var trans = DAO_Connection.Connection.BeginTransaction();
 
                 try
                 {
-                    var cols = Column.ToArray(e);
+                    var cols = Column.ToArray(e).Where(x => !x.ColAttr.autoIncrement);
 
                     if (!Check(e))
                     {
@@ -268,7 +272,7 @@ namespace Estudio
                             .VALUES(cols.Select(x => x.Value).ToArray())
                             .LogQuery()
                             .DisplayQuery()
-                            .ToCommand(DAO_Connection.Connection)
+                            .ToCommand()
                             .ExecuteNonQuery();
                     }
                     else
@@ -307,8 +311,7 @@ namespace Estudio
             
             try
             {
-                if (DAO_Connection.Connection.State != System.Data.ConnectionState.Open)
-                    DAO_Connection.Connection.Open();
+                DAO_Connection.Connection.Open();
 
                 var command = new QueryBuilder()
                     .SELECT()
@@ -348,9 +351,12 @@ namespace Estudio
             return list.Count > 0 ? list.ToArray() : null;
         }
 
-        public static bool Delete(T e)
+        public static bool Delete(T e, params string[] fields)
         {
-            bool deleted = false;
+            bool updateState = false;
+
+            if (e == null)
+                return false;
 
             try
             {
@@ -359,22 +365,36 @@ namespace Estudio
 
                 try
                 {
-                    var affected = new QueryBuilder()
+                    var query = new QueryBuilder()
                         .DELETE()
-                        .FROM(Table)
-                        .WHERE(Column.IDCol(e).ToEQString())
+                        .FROM(Table);
+
+                    if (fields == null || fields.Length == 0)
+                    {
+                        query.WHERE(Column.IDEqString(e));
+                    }
+                    else
+                    {
+                        query.WHERE(new Column(e, fields.First()).ToEQString());
+
+                        foreach (var field in fields.Skip(1))
+                            query.AND(new Column(e, field).ToEQString());
+                    }
+
+                    query
+                        .LIMIT()
                         .LogQuery()
                         .DisplayQuery()
                         .ToCommand()
                         .ExecuteNonQuery();
-
+                    
                     trans.Commit();
-                    deleted = affected > 0;
+                    updateState = true;
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
                     trans.Rollback();
+                    Console.WriteLine(ex.Message);
                 }
                 finally
                 {
@@ -390,7 +410,7 @@ namespace Estudio
                 DAO_Connection.Connection.Close();
             }
 
-            return deleted;
+            return updateState;
         }
 
         public static (bool updateStatus, T newState) Update(T oldState, params (string column, object value)[] updatePairs)
@@ -452,7 +472,7 @@ namespace Estudio
 
             foreach(var prop in Proprieties)
             {
-                if ((prop.GetValue(newState) != null) && !prop.GetValue(oldState).Equals(prop.GetValue(newState)))
+                if ((!ignoreNulls || prop.GetValue(newState) != null) && !prop.GetValue(oldState).Equals(prop.GetValue(newState)))
                     updatePairs.Add(new Column(newState, prop).ToPair());
             }
 

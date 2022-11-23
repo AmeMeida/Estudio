@@ -11,7 +11,6 @@ namespace Estudio
         NotFound = 0,
         User = 1,
         Admin = 2,
-        Isa = 3,
     }
 
     [Entity, Table("Estudio_Login")]
