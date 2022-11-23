@@ -1,14 +1,8 @@
-﻿using MySql.Data.MySqlClient;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data.OleDb;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Estudio
@@ -225,7 +219,8 @@ namespace Estudio
 
             try
             {
-                DAO_Connection.Connection.Open();
+                if (DAO_Connection.Connection.State != System.Data.ConnectionState.Open)
+                    DAO_Connection.Connection.Open();
 
                 var query = new QueryBuilder()
                     .SELECT()
@@ -263,8 +258,13 @@ namespace Estudio
                 {
                     var cols = Column.ToArray(e).Where(x => !x.ColAttr.autoIncrement);
 
-                    if (!Check(e))
-                    {
+                    /*
+                    var exists = !Check(e);
+                    DAO_Connection.Connection.Open();
+                    */
+
+                    // if (exists)
+                    // {
                         new QueryBuilder()
                             .INSERT()
                             .INTO(Table)
@@ -274,11 +274,13 @@ namespace Estudio
                             .DisplayQuery()
                             .ToCommand()
                             .ExecuteNonQuery();
+                    /*
                     }
                     else
                     {
                         Update(e, cols.Where(x => x.Prop != IDProp).Select(x => x.ToPair()).ToArray());
                     }
+                    */
 
                     trans.Commit();
                     status = true;
@@ -354,9 +356,13 @@ namespace Estudio
         public static bool Delete(T e, params string[] fields)
         {
             bool updateState = false;
+            Console.WriteLine("what");
 
             if (e == null)
+            {
+                Console.WriteLine("NULL ERROR");
                 return false;
+            }
 
             try
             {

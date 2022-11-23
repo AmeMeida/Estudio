@@ -61,6 +61,7 @@ namespace Estudio.view
             this.cbModalidade.Name = "cbModalidade";
             this.cbModalidade.Size = new System.Drawing.Size(200, 21);
             this.cbModalidade.TabIndex = 1;
+            this.cbModalidade.SelectedIndexChanged += new System.EventHandler(this.cbModalidade_SelectedIndexChanged);
             // 
             // chklstDiasSemana
             // 

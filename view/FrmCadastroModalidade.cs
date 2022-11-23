@@ -24,8 +24,7 @@ namespace Estudio.view
 
                 if (value != null)
                 {
-                    if (Mode != FormModes.Edicao)
-                        Mode = FormModes.Visualizacao;
+                    Mode = FormModes.Visualizacao;
                     cboBuscar.Text = value.Descricao;
                     txtDescricao.Text = Value.Descricao;
                     numPreco.Value = Convert.ToDecimal(Value.Preco);
@@ -62,7 +61,8 @@ namespace Estudio.view
 
                     case FormModes.Visualizacao:
                         this.DisableAll();
-                        ScrVisualizacao();
+                        ScrBusca();
+                        cboBuscar.Enabled = true;
                         btnCadastro.Enabled = true;
                         btnCadastro.Text = "Editar";
                         gbCadastro.Text = "Visualização";
@@ -89,7 +89,6 @@ namespace Estudio.view
             lblBusca.Visible = true;
             if (Value == null)
                 cboBuscar.SelectedIndex = -1;
-            AtualizarCBO();
         }
 
         private void AtualizarCBO() => cboBuscar.DataSource = ORM.GetAllAtivos<Modalidade>();
@@ -99,6 +98,7 @@ namespace Estudio.view
         {
             InitializeComponent();
             Value = modalidade;
+            AtualizarCBO();
         }
 
         public FrmCadastroModalidade() : this(null) { }

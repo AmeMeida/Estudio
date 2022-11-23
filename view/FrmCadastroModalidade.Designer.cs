@@ -70,6 +70,11 @@
             // 
             this.numPreco.DecimalPlaces = 2;
             resources.ApplyResources(this.numPreco, "numPreco");
+            this.numPreco.Maximum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
             this.numPreco.Name = "numPreco";
             // 
             // lblQntdAulas

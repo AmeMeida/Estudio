@@ -45,14 +45,15 @@ namespace Estudio
             this.cadastrarModalidadeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.consultarModalidadesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.excluirModalidadeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TurmaToolStripMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.cadastrarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gbLogin = new System.Windows.Forms.GroupBox();
             this.btnLogin = new System.Windows.Forms.Button();
             this.txtSenha = new System.Windows.Forms.TextBox();
             this.txtLogin = new System.Windows.Forms.TextBox();
             this.lblSenha = new System.Windows.Forms.Label();
             this.lblLogin = new System.Windows.Forms.Label();
-            this.TurmaToolStripMenu = new System.Windows.Forms.ToolStripMenuItem();
-            this.cadastrarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.excluirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.gbLogin.SuspendLayout();
             this.SuspendLayout();
@@ -187,6 +188,22 @@ namespace Estudio
             this.excluirModalidadeToolStripMenuItem.Text = "Excluir modalidade";
             this.excluirModalidadeToolStripMenuItem.Click += new System.EventHandler(this.ShowExcluirModalidade);
             // 
+            // TurmaToolStripMenu
+            // 
+            this.TurmaToolStripMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cadastrarToolStripMenuItem,
+            this.excluirToolStripMenuItem});
+            this.TurmaToolStripMenu.Name = "TurmaToolStripMenu";
+            this.TurmaToolStripMenu.Size = new System.Drawing.Size(53, 20);
+            this.TurmaToolStripMenu.Text = "&Turma";
+            // 
+            // cadastrarToolStripMenuItem
+            // 
+            this.cadastrarToolStripMenuItem.Name = "cadastrarToolStripMenuItem";
+            this.cadastrarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.cadastrarToolStripMenuItem.Text = "Cadastrar";
+            this.cadastrarToolStripMenuItem.Click += new System.EventHandler(this.cadastrarToolStripMenuItem_Click);
+            // 
             // gbLogin
             // 
             this.gbLogin.Controls.Add(this.btnLogin);
@@ -248,20 +265,12 @@ namespace Estudio
             this.lblLogin.TabIndex = 0;
             this.lblLogin.Text = "Login";
             // 
-            // TurmaToolStripMenu
+            // excluirToolStripMenuItem
             // 
-            this.TurmaToolStripMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cadastrarToolStripMenuItem});
-            this.TurmaToolStripMenu.Name = "TurmaToolStripMenu";
-            this.TurmaToolStripMenu.Size = new System.Drawing.Size(53, 20);
-            this.TurmaToolStripMenu.Text = "&Turma";
-            // 
-            // cadastrarToolStripMenuItem
-            // 
-            this.cadastrarToolStripMenuItem.Name = "cadastrarToolStripMenuItem";
-            this.cadastrarToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.cadastrarToolStripMenuItem.Text = "Cadastrar";
-            this.cadastrarToolStripMenuItem.Click += new System.EventHandler(this.cadastrarToolStripMenuItem_Click);
+            this.excluirToolStripMenuItem.Name = "excluirToolStripMenuItem";
+            this.excluirToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.excluirToolStripMenuItem.Text = "Excluir";
+            this.excluirToolStripMenuItem.Click += new System.EventHandler(this.excluirToolStripMenuItem_Click);
             // 
             // FrmEstudio
             // 
@@ -310,6 +319,7 @@ namespace Estudio
         private System.Windows.Forms.ToolStripMenuItem excluirModalidadeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem TurmaToolStripMenu;
         private System.Windows.Forms.ToolStripMenuItem cadastrarToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem excluirToolStripMenuItem;
     }
 }
 

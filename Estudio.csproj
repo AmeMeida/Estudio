@@ -93,12 +93,6 @@
     <Compile Include="view\FrmConsultarModalidades.Designer.cs">
       <DependentUpon>FrmConsultarModalidades.cs</DependentUpon>
     </Compile>
-    <Compile Include="view\FrmConsultarTurma.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="view\FrmConsultarTurma.Designer.cs">
-      <DependentUpon>FrmConsultarTurma.cs</DependentUpon>
-    </Compile>
     <Compile Include="view\FrmConsultarUsuarios.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -115,6 +109,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryBuilder.cs" />
     <Compile Include="model\Usuario.cs" />
+    <Compile Include="view\FrmExcluirTurma.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="view\FrmExcluirTurma.Designer.cs">
+      <DependentUpon>FrmExcluirTurma.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="view\FrmCadastroAluno.resx">
       <DependentUpon>FrmCadastroAluno.cs</DependentUpon>
     </EmbeddedResource>
@@ -133,9 +133,6 @@
     <EmbeddedResource Include="view\FrmConsultarModalidades.resx">
       <DependentUpon>FrmConsultarModalidades.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="view\FrmConsultarTurma.resx">
-      <DependentUpon>FrmConsultarTurma.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="view\FrmConsultarUsuarios.resx">
       <DependentUpon>FrmConsultarUsuarios.cs</DependentUpon>
     </EmbeddedResource>
@@ -151,6 +148,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="view\FrmExcluirTurma.resx">
+      <DependentUpon>FrmExcluirTurma.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

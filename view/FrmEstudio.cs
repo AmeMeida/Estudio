@@ -130,7 +130,7 @@ namespace Estudio
             => this.GetChild<FrmCadastroModalidade, Modalidade>(FormModes.Cadastro);
 
         private void ShowConsultarModalidades(object sender, EventArgs e)
-            => this.GetChild<FrmCadastroModalidade, Modalidade>(FormModes.Edicao);
+            => this.GetChild<FrmCadastroModalidade, Modalidade>(FormModes.Visualizacao);
 
         private void ShowConsultarAlunos(object sender, EventArgs e)
             => this.GetChild<FrmConsultarAlunos>();
@@ -139,6 +139,11 @@ namespace Estudio
             => this.GetChild<FrmConsultarModalidades>();
 
         private void cadastrarToolStripMenuItem_Click(object sender, EventArgs e)
-            => this.GetChild<FrmCadastroTurma>();
+            => this.GetChild<FrmCadastroTurma, Turma>(FormModes.Cadastro);
+
+        private void excluirToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.GetChild<FrmExcluirTurma>();
+        }
     }
 }

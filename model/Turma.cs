@@ -21,15 +21,15 @@ namespace Estudio.model
         public string Hora { get; set; }
 
         [Column("idModalidade")]
-        public string Modalidade { get; set; }
+        public int? Modalidade { get; set; }
 
         [ID, Column("idEstudio_Turma")]
-        public int ID { get; set; }
+        public int? ID { get; set; }
 
         [Column("noAlunosMatriculadosTurma")]
         public int NoAlunos { get; set; }
 
-        public Turma(string professor, string diaSemana, string hora, string modalidade, int noAlunos)
+        public Turma(string professor, string diaSemana, string hora, int modalidade, int noAlunos)
         {
             Professor = professor;
             DiaSemana = diaSemana;
@@ -45,7 +45,28 @@ namespace Estudio.model
     public static class TurmaDAO
     {
         public static bool Cadastrar(this Turma turma) => ORM<Turma>.Save(turma);
-        public static bool Remover(this Turma turma) => ORM<Turma>.Delete(turma);
+        public static bool Remover(this Turma turma)
+        {
+            var removed = false;
+
+            DAO_Connection.Connection.Open();
+            var trans = DAO_Connection.Connection.BeginTransaction();
+
+            removed = new QueryBuilder()
+                .DELETE()
+                .FROM("Estudio_Turma")
+                .WHERE("idModalidade = '" + turma.Modalidade + "'")
+                .AND("professorTurma = '" + turma.Professor + "'")
+                .AND("horasTurma = '" + turma.Hora + "'")
+                .LogQuery()
+                .DisplayQuery()
+                .ToCommand()
+                .ExecuteNonQuery() > 0;
+
+            trans.Commit();
+            DAO_Connection.Connection.Close();
+            return removed;
+        }
         public static bool Consultar(this Turma turma) => ORM<Turma>.Check(turma);
         public static bool Atualizar(this Turma oldState, Turma newState) => ORM<Turma>.UpdateFrom(oldState, newState).updateStatus;
     }

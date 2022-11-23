@@ -117,131 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="&gt;&gt;lblPreco.Name" xml:space="preserve">
-    <value>lblPreco</value>
-  </data>
-  <data name="&gt;&gt;lblPreco.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblPreco.Parent" xml:space="preserve">
-    <value>gbCadastro</value>
-  </data>
-  <data name="&gt;&gt;lblPreco.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;numPreco.Name" xml:space="preserve">
-    <value>numPreco</value>
-  </data>
-  <data name="&gt;&gt;numPreco.Type" xml:space="preserve">
-    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;numPreco.Parent" xml:space="preserve">
-    <value>gbCadastro</value>
-  </data>
-  <data name="&gt;&gt;numPreco.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;lblQntdAulas.Name" xml:space="preserve">
-    <value>lblQntdAulas</value>
-  </data>
-  <data name="&gt;&gt;lblQntdAulas.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblQntdAulas.Parent" xml:space="preserve">
-    <value>gbCadastro</value>
-  </data>
-  <data name="&gt;&gt;lblQntdAulas.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;lblQntdAlunos.Name" xml:space="preserve">
-    <value>lblQntdAlunos</value>
-  </data>
-  <data name="&gt;&gt;lblQntdAlunos.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblQntdAlunos.Parent" xml:space="preserve">
-    <value>gbCadastro</value>
-  </data>
-  <data name="&gt;&gt;lblQntdAlunos.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="&gt;&gt;numQntdAulas.Name" xml:space="preserve">
-    <value>numQntdAulas</value>
-  </data>
-  <data name="&gt;&gt;numQntdAulas.Type" xml:space="preserve">
-    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;numQntdAulas.Parent" xml:space="preserve">
-    <value>gbCadastro</value>
-  </data>
-  <data name="&gt;&gt;numQntdAulas.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="&gt;&gt;numQntdAlunos.Name" xml:space="preserve">
-    <value>numQntdAlunos</value>
-  </data>
-  <data name="&gt;&gt;numQntdAlunos.Type" xml:space="preserve">
-    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;numQntdAlunos.Parent" xml:space="preserve">
-    <value>gbCadastro</value>
-  </data>
-  <data name="&gt;&gt;numQntdAlunos.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <data name="&gt;&gt;lblDescricao.Name" xml:space="preserve">
-    <value>lblDescricao</value>
-  </data>
-  <data name="&gt;&gt;lblDescricao.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;lblDescricao.Parent" xml:space="preserve">
-    <value>gbCadastro</value>
-  </data>
-  <data name="&gt;&gt;lblDescricao.ZOrder" xml:space="preserve">
-    <value>6</value>
-  </data>
-  <data name="&gt;&gt;txtDescricao.Name" xml:space="preserve">
-    <value>txtDescricao</value>
-  </data>
-  <data name="&gt;&gt;txtDescricao.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;txtDescricao.Parent" xml:space="preserve">
-    <value>gbCadastro</value>
-  </data>
-  <data name="&gt;&gt;txtDescricao.ZOrder" xml:space="preserve">
-    <value>7</value>
-  </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="gbCadastro.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 52</value>
-  </data>
-  <data name="gbCadastro.Size" type="System.Drawing.Size, System.Drawing">
-    <value>295, 219</value>
-  </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="gbCadastro.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="gbCadastro.Text" xml:space="preserve">
-    <value>Cadastro</value>
-  </data>
-  <data name="&gt;&gt;gbCadastro.Name" xml:space="preserve">
-    <value>gbCadastro</value>
-  </data>
-  <data name="&gt;&gt;gbCadastro.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;gbCadastro.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;gbCadastro.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
   <data name="lblPreco.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="lblPreco.Location" type="System.Drawing.Point, System.Drawing">
     <value>12, 172</value>
   </data>
@@ -434,6 +314,30 @@
   <data name="&gt;&gt;txtDescricao.ZOrder" xml:space="preserve">
     <value>7</value>
   </data>
+  <data name="gbCadastro.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 52</value>
+  </data>
+  <data name="gbCadastro.Size" type="System.Drawing.Size, System.Drawing">
+    <value>295, 219</value>
+  </data>
+  <data name="gbCadastro.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="gbCadastro.Text" xml:space="preserve">
+    <value>Cadastro</value>
+  </data>
+  <data name="&gt;&gt;gbCadastro.Name" xml:space="preserve">
+    <value>gbCadastro</value>
+  </data>
+  <data name="&gt;&gt;gbCadastro.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;gbCadastro.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;gbCadastro.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
   <data name="btnCadastro.Location" type="System.Drawing.Point, System.Drawing">
     <value>12, 277</value>
   </data>
@@ -514,10 +418,6 @@
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
     <value>295, 308</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Cadastro de Modalidades</value>

@@ -14,6 +14,7 @@ namespace Estudio.model
         private float _preco;
         private int _qtdeAlunos;
         private int _qtdeAulas;
+        private int _id;
 
         [ID, Column("descricaoModalidade")]
         public string Descricao
@@ -23,7 +24,11 @@ namespace Estudio.model
         }
 
         [Column("idEstudio_Modalidade", autoIncrement = true)]
-        public int ID { get; set; }
+        public int ID
+        {
+            get => _id;
+            set => _id = value;
+        }
 
         [Column("precoModalidade")]
         public float Preco
