@@ -33,6 +33,10 @@ namespace Estudio
                 valString = @string.Replace("'", "''");
             else if (value is float || value is double || value is decimal)
                 valString = value.ToString().Replace(",", ".");
+            else if (value is bool @bool)
+                valString = @bool ? "1" : "0";
+            else if (value.GetType().IsEnum)
+                valString = ((int)value).ToString();
             else
                 valString = value.ToString();
 

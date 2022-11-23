@@ -133,7 +133,7 @@ namespace Estudio
 
         public object ToSQL(object obj)
         {
-            if (obj != null && sqlParser.GetInvocationList().Length > 0)
+            if (obj != null && sqlParser != null && sqlParser.GetInvocationList().Length > 0)
                 obj = sqlParser(obj);
             return obj;
         }
@@ -142,10 +142,10 @@ namespace Estudio
         {
             if (obj is DBNull)
                 return null;
-            else if (csParser.GetInvocationList().Length == 0)
-                return obj;
-            else
+            else if (csParser != null && csParser.GetInvocationList().Length > 0)
                 return csParser(obj);
+            else
+                return obj;
         }
 
         public ColumnAttribute(string name)
@@ -251,7 +251,8 @@ namespace Estudio
 
             try
             {
-                DAO_Connection.Connection.Open();
+                if (DAO_Connection.Connection.State != System.Data.ConnectionState.Open)
+                    DAO_Connection.Connection.Open();
                 var trans = DAO_Connection.Connection.BeginTransaction();
 
                 try
@@ -272,15 +273,7 @@ namespace Estudio
                     }
                     else
                     {
-                        new QueryBuilder()
-                            .UPDATE(Table)
-                            .SET(cols.Select((x) => x.ToPair()).ToArray())
-                            .WHERE(Column.IDEqString(e))
-                            .LIMIT()
-                            .LogQuery()
-                            .DisplayQuery()
-                            .ToCommand()
-                            .ExecuteNonQuery();
+                        Update(e, cols.Where(x => x.Prop != IDProp).Select(x => x.ToPair()).ToArray());
                     }
 
                     trans.Commit();
@@ -314,7 +307,8 @@ namespace Estudio
             
             try
             {
-                DAO_Connection.Connection.Open();
+                if (DAO_Connection.Connection.State != System.Data.ConnectionState.Open)
+                    DAO_Connection.Connection.Open();
 
                 var command = new QueryBuilder()
                     .SELECT()
@@ -352,6 +346,51 @@ namespace Estudio
             }
 
             return list.Count > 0 ? list.ToArray() : null;
+        }
+
+        public static bool Delete(T e)
+        {
+            bool deleted = false;
+
+            try
+            {
+                DAO_Connection.Connection.Open();
+                var trans = DAO_Connection.Connection.BeginTransaction();
+
+                try
+                {
+                    var affected = new QueryBuilder()
+                        .DELETE()
+                        .FROM(Table)
+                        .WHERE(Column.IDCol(e).ToEQString())
+                        .LogQuery()
+                        .DisplayQuery()
+                        .ToCommand()
+                        .ExecuteNonQuery();
+
+                    trans.Commit();
+                    deleted = affected > 0;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    trans.Rollback();
+                }
+                finally
+                {
+                    trans.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                DAO_Connection.Connection.Close();
+            }
+
+            return deleted;
         }
 
         public static (bool updateStatus, T newState) Update(T oldState, params (string column, object value)[] updatePairs)
@@ -413,7 +452,7 @@ namespace Estudio
 
             foreach(var prop in Proprieties)
             {
-                if ((!ignoreNulls || prop.GetValue(newState) != null) && !prop.GetValue(oldState).Equals(prop.GetValue(newState)))
+                if ((prop.GetValue(newState) != null) && !prop.GetValue(oldState).Equals(prop.GetValue(newState)))
                     updatePairs.Add(new Column(newState, prop).ToPair());
             }
 

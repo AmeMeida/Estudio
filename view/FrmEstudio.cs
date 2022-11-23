@@ -137,5 +137,8 @@ namespace Estudio
 
         private void ShowExcluirModalidade(object sender, EventArgs e)
             => this.GetChild<FrmConsultarModalidades>();
+
+        private void cadastrarToolStripMenuItem_Click(object sender, EventArgs e)
+            => this.GetChild<FrmCadastroTurma>();
     }
 }
